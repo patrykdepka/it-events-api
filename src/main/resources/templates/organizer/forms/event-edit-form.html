@@ -54,7 +54,7 @@
                     <select id="eventType" name="eventType"
                             class="form-control" th:class="${#fields.hasErrors('eventType')} == FALSE ? 'form-control' : 'form-control is-invalid'"
                             th:field="*{eventType}">
-                        <option th:each="eventType : ${T(pl.patrykdepka.iteventsapp.event.enumeration.EventType).values()}" th:value="${eventType}" th:text="${eventType.displayName}"></option>
+                        <option th:each="eventType : ${T(pl.patrykdepka.iteventsapi.event.enumeration.EventType).values()}" th:value="${eventType}" th:text="${eventType.displayName}"></option>
                     </select>
                     <div id="eventTypeErrorMessage" class="error-message" style="display: none;" th:text="#{form.field.eventType.error.notEmpty.message}">Błędy związane z typem wydarzenia</div>
                     <div class="error-message" th:errors="*{eventType}">Błędy związane z typem wydarzenia</div>
@@ -83,7 +83,7 @@
                     <select id="admission" name="admission"
                             class="form-control" th:class="${#fields.hasErrors('admission')} == FALSE ? 'form-control' : 'form-control is-invalid'"
                             th:field="*{admission}">
-                        <option th:each="admission : ${T(pl.patrykdepka.iteventsapp.event.enumeration.AdmissionType).values()}" th:value="${admission}" th:text="${admission.displayName}"></option>
+                        <option th:each="admission : ${T(pl.patrykdepka.iteventsapi.event.enumeration.AdmissionType).values()}" th:value="${admission}" th:text="${admission.displayName}"></option>
                     </select>
                     <div id="admissionErrorMessage" class="error-message" style="display: none;" th:text="#{form.field.admission.error.notEmpty.message}">Błędy związane z wstępem</div>
                     <div class="error-message" th:errors="*{admission}">Błędy związane z wstępem</div>

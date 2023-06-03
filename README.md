@@ -1,4 +1,4 @@
-# it-events-app
+# it-events-api
 This is my servlet-based web application for IT events management. Instruction how to run this application is below the technologies stack.
 ## Description
 There are three user roles (ADMIN, ORGANIZER, USER).

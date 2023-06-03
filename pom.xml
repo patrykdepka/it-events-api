@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>pl.patrykdepka</groupId>
-    <artifactId>it-events-app</artifactId>
+    <artifactId>it-events-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>it-events-app</name>
-    <description>it-events-app</description>
+    <name>it-events-api</name>
+    <description>it-events-api</description>
     <properties>
         <java.version>17</java.version>
     </properties>

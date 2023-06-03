@@ -56,7 +56,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">ROLA</label>
-                    <div th:each="userRole : ${T(pl.patrykdepka.iteventsapp.appuser.model.Role).values()}">
+                    <div th:each="userRole : ${T(pl.patrykdepka.iteventsapi.appuser.model.Role).values()}">
                         <input type="checkbox"
                                th:id="${userRole}" th:name="${userRole}"
                                class="custom-checkbox"
