@@ -35,12 +35,11 @@ public class ProfileImageCreator {
         }
     }
 
-    public static ProfileImage createNewProfileImage(Long id) {
+    public static ProfileImage createDefaultProfileImage() {
         try {
-            InputStream imagePath = new ClassPathResource("static/images/custom_profile_image.png").getInputStream();
-            MockMultipartFile defaultProfileImage = new MockMultipartFile("custom_profile_image.png", StreamUtils.copyToByteArray(imagePath));
+            InputStream imagePath = new ClassPathResource("static/images/default_profile_image.png").getInputStream();
+            MockMultipartFile defaultProfileImage = new MockMultipartFile("default_profile_image.png", StreamUtils.copyToByteArray(imagePath));
             return ProfileImage.builder()
-                    .id(id)
                     .fileName(defaultProfileImage.getOriginalFilename())
                     .fileType(defaultProfileImage.getContentType())
                     .fileData(defaultProfileImage.getBytes())
