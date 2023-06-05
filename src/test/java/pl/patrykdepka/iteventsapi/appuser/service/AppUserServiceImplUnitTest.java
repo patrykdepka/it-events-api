@@ -17,6 +17,7 @@ import pl.patrykdepka.iteventsapi.appuser.repository.AppUserRepository;
 import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserProfileEditDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserRegistrationDTOCreator;
+import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
 import pl.patrykdepka.iteventsapi.profileimage.service.ProfileImageService;
 import pl.patrykdepka.iteventsapi.security.AppUserDetailsService;
 
@@ -84,6 +85,7 @@ class AppUserServiceImplUnitTest {
     void shouldCreateUser() {
         // given
         AppUserRegistrationDTO newUserData = AppUserRegistrationDTOCreator.create();
+        when(profileImageService.createDefaultProfileImage()).thenReturn(ProfileImageCreator.createDefaultProfileImage());
         when(passwordEncoder.encode(newUserData.getPassword())).thenReturn("{bcrypt}$2a$10$r7EjB7rf4j4SJ/ZVYUVT6.AIcaz6VNOGqNGr6mWAURZleQS2bSLie");
         // when
         appUserServiceImpl.createUser(newUserData);
@@ -91,7 +93,7 @@ class AppUserServiceImplUnitTest {
         verify(appUserRepository, times(1)).save(argThat((AppUser savedUser) -> {
             Assertions.assertAll("Testing saved user",
                     () -> assertNull(savedUser.getId()),
-                    () -> assertNull(savedUser.getProfileImage()),
+                    () -> assertNotNull(savedUser.getProfileImage()),
                     () -> assertEquals(newUserData.getFirstName(), savedUser.getFirstName()),
                     () -> assertEquals(newUserData.getLastName(), savedUser.getLastName()),
                     () -> assertEquals(newUserData.getDateOfBirth(), savedUser.getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))),
@@ -191,7 +193,7 @@ class AppUserServiceImplUnitTest {
         AppUser user = AppUserCreator.create(2L, "Jan", "Kowalski");
         when(appUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
         // when
-        AppUserProfileDTO returnedUserProfile = appUserServiceImpl.findUserProfileByUserId(user.getId());
+        AppUserProfileDTO returnedUserProfile = appUserServiceImpl.findUserProfileByUserId(user.getId()).get();
         // then
         assertThat(returnedUserProfile).isNotNull();
         assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getFileType());

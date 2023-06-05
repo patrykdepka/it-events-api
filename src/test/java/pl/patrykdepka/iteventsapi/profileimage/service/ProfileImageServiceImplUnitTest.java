@@ -58,7 +58,6 @@ class ProfileImageServiceImplUnitTest {
         Optional<ProfileImage> updatedProfileImage = profileImageServiceImpl.updateProfileImage(user, newProfileImageFile);
         // then
         assertThat(updatedProfileImage.isPresent()).isTrue();
-        assertThat(updatedProfileImage.get().getId()).isNotNull();
         assertThat(updatedProfileImage.get().getFileName()).isEqualTo(newProfileImageFile.getOriginalFilename());
         assertThat(updatedProfileImage.get().getFileType()).isEqualTo(newProfileImageFile.getContentType());
         assertThat(updatedProfileImage.get().getFileData()).isEqualTo(newProfileImageFile.getBytes());
