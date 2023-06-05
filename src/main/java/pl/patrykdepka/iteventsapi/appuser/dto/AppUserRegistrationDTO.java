@@ -3,6 +3,7 @@ package pl.patrykdepka.iteventsapi.appuser.dto;
 import lombok.Getter;
 import lombok.Setter;
 import pl.patrykdepka.iteventsapi.appuser.annotation.PasswordValueMatch;
+import pl.patrykdepka.iteventsapi.core.UniqueField;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -32,6 +33,7 @@ public class AppUserRegistrationDTO {
     @NotNull(message = "{form.field.email.error.notNull.message}")
     @NotEmpty(message = "{form.field.email.error.notEmpty.message}")
     @Email(message = "{form.field.email.error.incorrectEmail.message}")
+    @UniqueField(message = "{form.field.email.error.emailIsInUse.message}")
     private String email;
     @NotNull(message = "{form.field.password.error.notNull.message}")
     @NotEmpty(message = "{form.field.password.error.notEmpty.message}")

@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.patrykdepka.iteventsapi.appuser.dto.*;
-import pl.patrykdepka.iteventsapi.appuser.exception.AppUserNotFoundException;
 import pl.patrykdepka.iteventsapi.appuser.exception.IncorrectCurrentPasswordException;
 import pl.patrykdepka.iteventsapi.appuser.mapper.AppUserProfileDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.mapper.AppUserProfileEditDTOMapper;
@@ -48,7 +47,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Transactional
-    public void createUser(AppUserRegistrationDTO newUserData) {
+    public AppUserProfileDTO createUser(AppUserRegistrationDTO newUserData) {
         AppUser user = new AppUser();
         user.setProfileImage(profileImageService.createDefaultProfileImage());
         user.setFirstName(newUserData.getFirstName());
@@ -60,6 +59,7 @@ public class AppUserServiceImpl implements AppUserService {
         user.setAccountNonLocked(true);
         user.setRoles(List.of(Role.ROLE_USER));
         appUserRepository.save(user);
+        return AppUserProfileDTOMapper.mapToAppUserProfileDTO(user);
     }
 
     public AppUserProfileDTO findUserProfile(AppUser currentUser) {
@@ -86,11 +86,10 @@ public class AppUserServiceImpl implements AppUserService {
         return Page.empty();
     }
 
-    public AppUserProfileDTO findUserProfileByUserId(Long id) {
+    public Optional<AppUserProfileDTO> findUserProfileByUserId(Long id) {
         return appUserRepository
                 .findById(id)
-                .map(AppUserProfileDTOMapper::mapToAppUserProfileDTO)
-                .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
+                .map(AppUserProfileDTOMapper::mapToAppUserProfileDTO);
     }
 
     public AppUserProfileEditDTO findUserProfileToEdit(AppUser currentUser) {
@@ -103,13 +102,11 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Transactional
-    public AppUserPasswordEditDTO updateUserPassword(AppUser currentUser, AppUserPasswordEditDTO newUserPasswordData) {
+    public void updateUserPassword(AppUser currentUser, AppUserPasswordEditDTO newUserPasswordData) {
         if (!checkIfCurrentPasswordIsCorrect(currentUser, newUserPasswordData.getCurrentPassword())) {
             throw new IncorrectCurrentPasswordException();
         }
         currentUser.setPassword(passwordEncoder.encode(newUserPasswordData.getNewPassword()));
-
-        return new AppUserPasswordEditDTO();
     }
 
     private AppUser setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {

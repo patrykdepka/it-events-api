@@ -5,11 +5,13 @@ import org.springframework.data.domain.Pageable;
 import pl.patrykdepka.iteventsapi.appuser.dto.*;
 import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
 
+import java.util.Optional;
+
 public interface AppUserService {
 
     boolean checkIfUserExists(String email);
 
-    void createUser(AppUserRegistrationDTO newUserData);
+    AppUserProfileDTO createUser(AppUserRegistrationDTO newUserData);
 
     AppUserProfileDTO findUserProfile(AppUser currentUser);
 
@@ -17,11 +19,11 @@ public interface AppUserService {
 
     Page<AppUserTableDTO> findUsersBySearch(String searchQuery, Pageable page);
 
-    AppUserProfileDTO findUserProfileByUserId(Long id);
+    Optional<AppUserProfileDTO> findUserProfileByUserId(Long id);
 
     AppUserProfileEditDTO findUserProfileToEdit(AppUser currentUser);
 
     AppUserProfileEditDTO updateUserProfile(AppUser currentUser, AppUserProfileEditDTO userProfile);
 
-    AppUserPasswordEditDTO updateUserPassword(AppUser currentUser, AppUserPasswordEditDTO newUserPassword);
+    void updateUserPassword(AppUser currentUser, AppUserPasswordEditDTO newUserPassword);
 }
