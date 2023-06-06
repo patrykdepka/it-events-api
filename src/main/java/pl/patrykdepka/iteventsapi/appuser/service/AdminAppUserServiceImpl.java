@@ -90,7 +90,7 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
     }
 
     @Transactional
-    public AdminAppUserPasswordEditDTO updateUserPassword(AppUser currentUser, Long id, AdminAppUserPasswordEditDTO newUserPassword) {
+    public void updateUserPassword(AppUser currentUser, Long id, AdminAppUserPasswordEditDTO newUserPassword) {
         if (!checkIfAdminPasswordIsCorrect(currentUser, newUserPassword.getAdminPassword())) {
             throw new IncorrectCurrentPasswordException();
         }
@@ -105,8 +105,6 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
                             throw new AppUserNotFoundException("User with ID " + id + " not found");
                         }
                 );
-
-        return new AdminAppUserPasswordEditDTO(id);
     }
 
     public void deleteUser(AppUser currentUser, AdminDeleteAppUserDTO deleteUserData) {

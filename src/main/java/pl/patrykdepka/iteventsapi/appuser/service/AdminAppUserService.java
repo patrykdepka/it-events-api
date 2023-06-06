@@ -19,7 +19,7 @@ public interface AdminAppUserService {
 
     AdminAppUserProfileEditDTO updateUserProfile(Long id, AdminAppUserProfileEditDTO userProfile);
 
-    AdminAppUserPasswordEditDTO updateUserPassword(AppUser currentUser, Long id, AdminAppUserPasswordEditDTO newUserPassword);
+    void updateUserPassword(AppUser currentUser, Long id, AdminAppUserPasswordEditDTO newUserPassword);
 
     void deleteUser(AppUser currentUser, AdminDeleteAppUserDTO deleteUserData);
 }

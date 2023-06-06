@@ -19,4 +19,9 @@ public class AdminDeleteAppUserDTO {
     public AdminDeleteAppUserDTO(Long id) {
         this.id = id;
     }
+
+    public AdminDeleteAppUserDTO(Long id, String adminPassword) {
+        this.id = id;
+        this.adminPassword = adminPassword;
+    }
 }
