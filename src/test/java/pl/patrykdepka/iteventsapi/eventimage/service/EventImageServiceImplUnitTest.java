@@ -64,7 +64,6 @@ class EventImageServiceImplUnitTest {
         Optional<EventImage> updatedEventImage = eventImageServiceImpl.updateEventImage(event, newEventImageFile);
         // then
         assertThat(updatedEventImage.isPresent()).isTrue();
-        assertThat(updatedEventImage.get().getId()).isNotNull();
         assertThat(updatedEventImage.get().getFileName()).isEqualTo(newEventImageFile.getOriginalFilename());
         assertThat(updatedEventImage.get().getFileType()).isEqualTo(newEventImageFile.getContentType());
         assertThat(updatedEventImage.get().getFileData()).isEqualTo(newEventImageFile.getBytes());

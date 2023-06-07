@@ -13,7 +13,6 @@ import pl.patrykdepka.iteventsapi.creator.EventCreator;
 import pl.patrykdepka.iteventsapi.event.dto.CityDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventCardDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
-import pl.patrykdepka.iteventsapi.event.mapper.EventDTOMapper;
 import pl.patrykdepka.iteventsapi.event.model.Event;
 import pl.patrykdepka.iteventsapi.event.repository.EventRepository;
 
@@ -68,10 +67,11 @@ class EventServiceImplUnitTest {
     void shouldReturnEvent() {
         // given
         AppUser organizer = AppUserCreator.create(4L, "Jan", "Nowak", ROLE_ORGANIZER);
+        AppUser user = AppUserCreator.create(2L, "Jan", "Kowalski");
         Event event = EventCreator.create(1L, "Java Dev Talks #1", DATE_TIME, organizer);
         when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
         // when
-        EventDTO returnedEvent = eventServiceImpl.findEvent(event.getId());
+        EventDTO returnedEvent = eventServiceImpl.findEvent(event.getId(), user);
         // then
         assertThat(returnedEvent.getId()).isEqualTo(event.getId());
         assertThat(returnedEvent.getName()).isEqualTo(event.getName());
@@ -200,30 +200,6 @@ class EventServiceImplUnitTest {
         eventServiceImpl.addUserToEventParticipantsList(user, event.getId());
         // then
         verify(eventRepository, Mockito.times(1)).findById(eq(event.getId()));
-    }
-
-    @Test
-    void shouldReturnTrueIfUserIsEventParticipant() {
-        // given
-        AppUser organizer = AppUserCreator.create(4L, "Jan", "Nowak", ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create(2L, "Jan", "Kowalski", ROLE_USER);
-        Event event = EventCreator.create(1L, "Java Dev Talks #1", DATE_TIME, organizer, List.of(user));
-        // when
-        boolean isParticipant = eventServiceImpl.checkIfCurrentUserIsParticipant(user, EventDTOMapper.mapToEventDTO(event));
-        // then
-        assertThat(isParticipant).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseIfUserIsNotEventParticipant() {
-        // given
-        AppUser organizer = AppUserCreator.create(4L, "Jan", "Nowak", ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create(2L, "Jan", "Kowalski", ROLE_USER);
-        Event event = EventCreator.create(1L, "Java Dev Talks #1", DATE_TIME, organizer);
-        // when
-        boolean isParticipant = eventServiceImpl.checkIfCurrentUserIsParticipant(user, EventDTOMapper.mapToEventDTO(event));
-        // then
-        assertThat(isParticipant).isFalse();
     }
 
     @Test
