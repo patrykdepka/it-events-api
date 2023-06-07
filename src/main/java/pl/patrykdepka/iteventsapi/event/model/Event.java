@@ -49,14 +49,16 @@ public class Event extends BaseEntity {
     )
     private List<AppUser> participants = new ArrayList<>();
 
-    public boolean addParticipant(AppUser user) {
+    public void addParticipant(AppUser user) {
         participants.add(user);
-        return true;
     }
 
-    public boolean removeParticipant(AppUser user) {
+    public void removeParticipant(AppUser user) {
         participants.remove(user);
-        return true;
+    }
+
+    public boolean checkIfUserIsParticipant(AppUser user) {
+        return participants.contains(user);
     }
 
     public static EventBuilder builder() {

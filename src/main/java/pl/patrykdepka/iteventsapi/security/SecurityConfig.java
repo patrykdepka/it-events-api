@@ -48,6 +48,7 @@ public class SecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests(request -> request
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/api/v1/home").permitAll()
                 .antMatchers("/api/v1/auth/signin", HttpMethod.POST.name()).permitAll()
                 .antMatchers("/api/v1/register").permitAll()
                 .antMatchers("/api/v1/users").hasRole(ROLE_USER.getRole())

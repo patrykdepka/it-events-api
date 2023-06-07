@@ -14,7 +14,7 @@ public interface EventService {
 
     List<EventCardDTO> findFirst10UpcomingEvents();
 
-    EventDTO findEvent(Long id);
+    EventDTO findEvent(Long id, AppUser currentUser);
 
     List<CityDTO> findAllCities();
 
@@ -26,11 +26,9 @@ public interface EventService {
 
     Page<EventCardDTO> findPastEventsByCity(String city, LocalDateTime currentDateTime, Pageable page);
 
-    void addUserToEventParticipantsList(AppUser currentUser, Long id);
+    EventDTO addUserToEventParticipantsList(AppUser currentUser, Long id);
 
-    void removeUserFromEventParticipantsList(AppUser currentUser, Long id);
-
-    boolean checkIfCurrentUserIsParticipant(AppUser currentUser, EventDTO event);
+    EventDTO removeUserFromEventParticipantsList(AppUser currentUser, Long id);
 
     Page<EventCardDTO> findUserEvents(AppUser currentUser, Pageable page);
 

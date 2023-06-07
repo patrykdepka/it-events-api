@@ -1,23 +1,24 @@
 package pl.patrykdepka.iteventsapi.event.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.patrykdepka.iteventsapi.appuser.facade.CurrentUserFacade;
 import pl.patrykdepka.iteventsapi.event.dto.CityDTO;
+import pl.patrykdepka.iteventsapi.event.dto.EventCardDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.exception.CityNotFoundException;
 import pl.patrykdepka.iteventsapi.event.service.EventService;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1")
 public class EventController {
     private final EventService eventService;
     private final CurrentUserFacade currentUserFacade;
@@ -27,107 +28,88 @@ public class EventController {
         this.currentUserFacade = currentUserFacade;
     }
 
-    @GetMapping("/")
-    public String showMainPage(Model model) {
-        model.addAttribute("events", eventService.findFirst10UpcomingEvents());
-        return "index";
+    @GetMapping("/home")
+    public List<EventCardDTO> showMainPage() {
+        return eventService.findFirst10UpcomingEvents();
     }
 
     @GetMapping("/events/{id}")
-    public String getEvent(@PathVariable Long id, Model model) {
-        EventDTO event = eventService.findEvent(id);
-        model.addAttribute("event", event);
-        model.addAttribute("currentUserIsParticipant", eventService.checkIfCurrentUserIsParticipant(currentUserFacade.getCurrentUser(), event));
-        return "event";
+    public EventDTO getEvent(@PathVariable Long id) {
+        return eventService.findEvent(id, currentUserFacade.getCurrentUser());
     }
 
     @GetMapping("/events")
-    public String getAllUpcomingEvents(@RequestParam(name = "page", required = false) Integer pageNumber,
-                                       Model model) {
-        model.addAttribute("pathName", "/events");
-        model.addAttribute("cities", eventService.findAllCities());
+    public Page<EventCardDTO> getAllUpcomingEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
-        model.addAttribute("events", eventService.findAllUpcomingEvents(LocalDateTime.now(), pageRequest));
-        return "events";
+        return eventService.findAllUpcomingEvents(LocalDateTime.now(), pageRequest);
     }
 
     @GetMapping("/events/cities/{city}")
-    public String getUpcomingEventsByCity(@PathVariable String city,
-                                          @RequestParam(name = "page", required = false) Integer pageNumber,
-                                          Model model) {
-        model.addAttribute("pathName", "/events");
+    public Page<EventCardDTO> getUpcomingEventsByCity(@PathVariable String city,
+                                                      @RequestParam(name = "page", required = false) Integer pageNumber) {
         List<CityDTO> cities = eventService.findAllCities();
-        model.addAttribute("cities", cities);
         city = getCity(cities, city);
-        model.addAttribute("cityName", city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
-        model.addAttribute("events", eventService.findUpcomingEventsByCity(city, LocalDateTime.now(), pageRequest));
-        return "events";
+        return eventService.findUpcomingEventsByCity(city, LocalDateTime.now(), pageRequest);
     }
 
     @GetMapping("/archive/events")
-    public String getAllPastEvents(@RequestParam(name = "page", required = false) Integer pageNumber,
-                                   Model model) {
-        model.addAttribute("pathName", "/archive/events");
-        model.addAttribute("cities", eventService.findAllCities());
+    public Page<EventCardDTO> getAllPastEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        model.addAttribute("events", eventService.findAllPastEvents(LocalDateTime.now(), pageRequest));
-        return "events";
+        return eventService.findAllPastEvents(LocalDateTime.now(), pageRequest);
     }
 
     @GetMapping("/archive/events/cities/{city}")
-    public String getPastEventsByCity(@PathVariable String city,
-                                      @RequestParam(name = "page", required = false) Integer pageNumber,
-                                      Model model) {
-        model.addAttribute("pathName", "/archive/events");
+    public Page<EventCardDTO> getPastEventsByCity(@PathVariable String city,
+                                                  @RequestParam(name = "page", required = false) Integer pageNumber) {
         List<CityDTO> cities = eventService.findAllCities();
-        model.addAttribute("cities", cities);
         city = getCity(cities, city);
-        model.addAttribute("cityName", city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        model.addAttribute("events", eventService.findPastEventsByCity(city, LocalDateTime.now(), pageRequest));
-        return "events";
+        return eventService.findPastEventsByCity(city, LocalDateTime.now(), pageRequest);
     }
 
-    @PatchMapping("/events/{id}/join")
-    public String joinEvent(@PathVariable Long id) {
-        eventService.addUserToEventParticipantsList(currentUserFacade.getCurrentUser(), id);
-        return "redirect:/events/" + id;
+    @PostMapping("/events/{id}/join")
+    public ResponseEntity<EventDTO> joinEvent(@PathVariable Long id) {
+        EventDTO event = eventService.addUserToEventParticipantsList(currentUserFacade.getCurrentUser(), id);
+        URI eventUri = ServletUriComponentsBuilder
+                .fromUriString("/api/v1/events")
+                .path("/{id}")
+                .buildAndExpand(event.getId())
+                .toUri();
+        return ResponseEntity.created(eventUri).body(event);
+
     }
 
-    @PatchMapping("/events/{id}/leave")
-    public String leaveEvent(@PathVariable Long id) {
-        eventService.removeUserFromEventParticipantsList(currentUserFacade.getCurrentUser(), id);
-        return "redirect:/events/" + id;
+    @PostMapping("/events/{id}/leave")
+    public ResponseEntity<EventDTO> leaveEvent(@PathVariable Long id) {
+        EventDTO event = eventService.removeUserFromEventParticipantsList(currentUserFacade.getCurrentUser(), id);
+        URI eventUri = ServletUriComponentsBuilder
+                .fromUriString("/api/v1/events")
+                .path("/{id}")
+                .buildAndExpand(event.getId())
+                .toUri();
+        return ResponseEntity.created(eventUri).body(event);
     }
 
     @GetMapping("/events/my_events")
-    public String getUserEvents(@RequestParam(name = "page", required = false) Integer pageNumber, Model model) {
-        model.addAttribute("pathName", "/events/my_events");
-        model.addAttribute("cities", eventService.findAllCities());
+    public Page<EventCardDTO> getUserEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        model.addAttribute("events", eventService.findUserEvents(currentUserFacade.getCurrentUser(), pageRequest));
-        return "events";
+        return eventService.findUserEvents(currentUserFacade.getCurrentUser(), pageRequest);
     }
 
     @GetMapping("/events/my_events/cities/{city}")
-    public String getUserEventsByCity(@PathVariable String city,
-                                      @RequestParam(name = "page", required = false) Integer pageNumber,
-                                      Model model) {
-        model.addAttribute("pathName", "/events/my_events");
+    public Page<EventCardDTO> getUserEventsByCity(@PathVariable String city,
+                                                  @RequestParam(name = "page", required = false) Integer pageNumber) {
         List<CityDTO> cities = eventService.findAllCities();
-        model.addAttribute("cities", cities);
         city = getCity(cities, city);
-        model.addAttribute("cityName", city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        model.addAttribute("events", eventService.findUserEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest));
-        return "events";
+        return eventService.findUserEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest);
     }
 
     private String getCity(List<CityDTO> cities, String city) {

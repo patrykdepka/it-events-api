@@ -12,11 +12,13 @@ import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.exception.EventNotFoundException;
 import pl.patrykdepka.iteventsapi.event.mapper.EventCardDTOMapper;
 import pl.patrykdepka.iteventsapi.event.mapper.EventDTOMapper;
+import pl.patrykdepka.iteventsapi.event.model.Event;
 import pl.patrykdepka.iteventsapi.event.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -30,10 +32,10 @@ public class EventServiceImpl implements EventService {
         return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findFirst10EventsByOrderByDateTimeAsc());
     }
 
-    public EventDTO findEvent(Long id) {
+    public EventDTO findEvent(Long id, AppUser currentUser) {
         return eventRepository
                 .findById(id)
-                .map(EventDTOMapper::mapToEventDTO)
+                .map(event -> EventDTOMapper.mapToEventDTO(event, currentUser))
                 .orElseThrow(() -> new EventNotFoundException("Event with ID " + id + " not found"));
     }
 
@@ -66,23 +68,33 @@ public class EventServiceImpl implements EventService {
     }
 
     @Transactional
-    public void addUserToEventParticipantsList(AppUser currentUser, Long id) {
-        eventRepository
-                .findById(id)
-                .map(event -> event.addParticipant(currentUser))
-                .orElseThrow(() -> new EventNotFoundException("Event with ID " + id + " not found"));
+    public EventDTO addUserToEventParticipantsList(AppUser currentUser, Long id) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
+            if (!event.checkIfUserIsParticipant(currentUser)) {
+                event.addParticipant(currentUser);
+            }
+
+            return EventDTOMapper.mapToEventDTO(event, currentUser);
+        }
+
+        throw new EventNotFoundException("Event with ID " + id + " not found");
     }
 
     @Transactional
-    public void removeUserFromEventParticipantsList(AppUser currentUser, Long id) {
-        eventRepository
-                .findById(id)
-                .map(event -> event.removeParticipant(currentUser))
-                .orElseThrow(() -> new EventNotFoundException("Event with ID " + id + " not found"));
-    }
+    public EventDTO removeUserFromEventParticipantsList(AppUser currentUser, Long id) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
+            if (event.checkIfUserIsParticipant(currentUser)) {
+                event.removeParticipant(currentUser);
+            }
 
-    public boolean checkIfCurrentUserIsParticipant(AppUser currentUser, EventDTO event) {
-        return event.checkIfCurrentUserIsParticipant(currentUser);
+            return EventDTOMapper.mapToEventDTO(event, currentUser);
+        }
+
+        throw new EventNotFoundException("Event with ID " + id + " not found");
     }
 
     public Page<EventCardDTO> findUserEvents(AppUser user, Pageable page) {
