@@ -9,13 +9,12 @@ import java.time.LocalDateTime;
 
 public class EventEditDTOCreator {
 
-    public static EventEditDTO create(Long id, LocalDateTime localDateTime) throws IOException {
+    public static EventEditDTO create(LocalDateTime dateTime) throws IOException {
         return EventEditDTO.builder()
-                .id(id)
                 .name("Updated test name")
-                .eventImage(EventImageCreator.createNewEventImageFile())
+//                .eventImage(EventImageCreator.createNewEventImageFile())
                 .eventType(EventType.CONFERENCE)
-                .dateTime(localDateTime.plusWeeks(1L).toString())
+                .dateTime(dateTime.plusWeeks(1L).toString())
                 .language("Updated test language")
                 .admission(AdmissionType.PAID)
                 .city("Updated test city")
