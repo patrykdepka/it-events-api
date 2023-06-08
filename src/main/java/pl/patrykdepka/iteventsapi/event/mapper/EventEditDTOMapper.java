@@ -11,7 +11,6 @@ public class EventEditDTOMapper {
 
     public static EventEditDTO mapToEventEditDTO(Event event) {
         EventEditDTO eventData = new EventEditDTO();
-        eventData.setId(event.getId());
         eventData.setName(event.getName());
         eventData.setImageType(event.getEventImage().getFileType());
         eventData.setImageData(Base64.getEncoder().encodeToString(event.getEventImage().getFileData()));

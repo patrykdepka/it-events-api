@@ -1,23 +1,22 @@
 package pl.patrykdepka.iteventsapi.event.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.patrykdepka.iteventsapi.appuser.facade.CurrentUserFacade;
-import pl.patrykdepka.iteventsapi.event.dto.CityDTO;
-import pl.patrykdepka.iteventsapi.event.dto.CreateEventDTO;
-import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
-import pl.patrykdepka.iteventsapi.event.dto.EventEditDTO;
+import pl.patrykdepka.iteventsapi.event.dto.*;
 import pl.patrykdepka.iteventsapi.event.exception.CityNotFoundException;
 import pl.patrykdepka.iteventsapi.event.service.OrganizerEventService;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1")
 public class OrganizerEventController {
     private final OrganizerEventService organizerEventService;
     private final CurrentUserFacade currentUserFacade;
@@ -27,75 +26,57 @@ public class OrganizerEventController {
         this.currentUserFacade = currentUserFacade;
     }
 
-    @GetMapping("/organizer/create_event")
-    public String showCreateEventForm(Model model) {
-        model.addAttribute("newEventData", new CreateEventDTO());
-        return "organizer/forms/create-event-form";
-    }
-
-    @PostMapping("/organizer/create_event")
-    public String createEvent(@Valid @ModelAttribute("newEventData") CreateEventDTO newEventData, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "organizer/forms/create-event-form";
-        } else {
-            EventDTO createdEvent = organizerEventService.createEvent(currentUserFacade.getCurrentUser(), newEventData);
-            return "redirect:/events/" + createdEvent.getId();
-        }
+    @PostMapping("/organizer/events")
+    public ResponseEntity<EventDTO> createEvent(@Valid @RequestBody CreateEventDTO newEventData) {
+        EventDTO event = organizerEventService.createEvent(currentUserFacade.getCurrentUser(), newEventData);
+        URI eventUri = ServletUriComponentsBuilder
+                .fromUriString("/api/v1/events")
+                .path("/{id}")
+                .buildAndExpand(event.getId())
+                .toUri();
+        return ResponseEntity.created(eventUri).body(event);
     }
 
     @GetMapping("/organizer/events")
-    public String findOrganizerEvents(@RequestParam(name = "page", required = false) Integer pageNumber, Model model) {
-        model.addAttribute("cities", organizerEventService.findAllCities());
+    public Page<EventCardDTO> findOrganizerEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        model.addAttribute("events", organizerEventService.findOrganizerEvents(currentUserFacade.getCurrentUser(), pageRequest));
-        return "organizer/events";
+        return organizerEventService.findOrganizerEvents(currentUserFacade.getCurrentUser(), pageRequest);
     }
 
     @GetMapping("/organizer/events/cities/{city}")
-    public String findOrganizerEventsByCity(@PathVariable String city,
-                                            @RequestParam(name = "page", required = false) Integer pageNumber, Model model) {
+    public Page<EventCardDTO> findOrganizerEventsByCity(@PathVariable String city,
+                                                        @RequestParam(name = "page", required = false) Integer pageNumber) {
         List<CityDTO> cities = organizerEventService.findAllCities();
-        model.addAttribute("cities", cities);
         city = getCity(cities, city);
-        model.addAttribute("cityName", city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        model.addAttribute("events", organizerEventService.findOrganizerEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest));
-        return "organizer/events";
+        return organizerEventService.findOrganizerEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest);
     }
 
     @GetMapping("/organizer/events/{id}/edit")
-    public String showEditEventForm(@PathVariable Long id, Model model) {
-        model.addAttribute("eventEditData", organizerEventService.findEventToEdit(currentUserFacade.getCurrentUser(), id));
-        return "organizer/forms/event-edit-form";
+    public EventEditDTO showEditEventForm(@PathVariable Long id) {
+        return organizerEventService.findEventToEdit(currentUserFacade.getCurrentUser(), id);
     }
 
-    @PatchMapping("/organizer/events")
-    public String updateEvent(@Valid @ModelAttribute("eventEditData") EventEditDTO eventEditData, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "organizer/forms/event-edit-form";
-        } else {
-            organizerEventService.updateEvent(currentUserFacade.getCurrentUser(), eventEditData);
-            return "redirect:/events/" + eventEditData.getId();
-        }
+    @PutMapping("/organizer/events/{id}")
+    public EventEditDTO updateEvent(@PathVariable Long id, @Valid @RequestBody EventEditDTO eventEditData) {
+        return organizerEventService.updateEvent(currentUserFacade.getCurrentUser(), id, eventEditData);
     }
 
     @GetMapping("/organizer/events/{id}/participants")
-    public String getEventParticipants(@RequestParam(name = "page", required = false) Integer pageNumber,
-                                       @PathVariable Long id,
-                                       Model model) {
+    public Page<ParticipantDTO> getEventParticipants(@PathVariable Long id, @RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "lastName"));
-        model.addAttribute("participants", organizerEventService.findEventParticipants(currentUserFacade.getCurrentUser(), id, pageRequest));
-        model.addAttribute("eventId", id);
-        return "organizer/participants";
+        return organizerEventService.findEventParticipants(currentUserFacade.getCurrentUser(), id, pageRequest);
     }
 
-    @GetMapping("/organizer/events/{eventId}/participants/{participantId}/remove")
-    public String removeParticipant(@PathVariable Long eventId, @PathVariable Long participantId) {
-        organizerEventService.removeParticipant(currentUserFacade.getCurrentUser(), eventId, participantId);
-        return "redirect:/organizer/events/" + eventId + "/participants";
+    @PutMapping("/organizer/events/{eventId}/participants/{participantId}")
+    public Page<ParticipantDTO> removeParticipantFromEvent(@PathVariable Long eventId, @PathVariable Long participantId,
+                                                           @RequestParam(name = "page", required = false) Integer pageNumber) {
+        int page = pageNumber != null ? pageNumber : 1;
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "lastName"));
+        return organizerEventService.removeParticipant(currentUserFacade.getCurrentUser(), eventId, participantId, pageRequest);
     }
 
     private String getCity(List<CityDTO> cities, String city) {

@@ -46,7 +46,7 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
         event.setAddress(newEventData.getAddress());
         event.setOrganizer(currentUser);
         event.setDescription(newEventData.getDescription());
-        return EventDTOMapper.mapToEventDTO(eventRepository.save(event));
+        return EventDTOMapper.mapToEventDTO(eventRepository.save(event), currentUser);
     }
 
     public List<CityDTO> findAllCities() {
@@ -74,16 +74,15 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
     }
 
     @Transactional
-    public void updateEvent(AppUser currentUser, EventEditDTO editEventDTO) {
-        eventRepository
-                .findById(editEventDTO.getId())
-                .ifPresentOrElse(
-                        event -> {
-                            setEventFields(editEventDTO, event);
-                        },
-                        () -> {
-                            throw new EventNotFoundException("Event with ID " + editEventDTO.getId() + " not found");
-                        });
+    public EventEditDTO updateEvent(AppUser currentUser, Long id, EventEditDTO eventEditData) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
+            setEventFields(eventEditData, event);
+            return EventEditDTOMapper.mapToEventEditDTO(event);
+        }
+
+        throw new EventNotFoundException("Event with ID " + id + " not found");
     }
 
     public Page<ParticipantDTO> findEventParticipants(AppUser currentUser, Long id, Pageable page) {
@@ -92,10 +91,15 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
     }
 
     @Transactional
-    public void removeParticipant(AppUser currentUser, Long eventId, Long participantId) {
+    public Page<ParticipantDTO> removeParticipant(AppUser currentUser, Long eventId, Long participantId, Pageable page) {
         Event event = returnEventIfCurrentUserIsOrganizer(currentUser, eventId);
-        AppUser user = event.getParticipants().stream().filter(participant -> participant.getId() == participantId).findFirst().get();
+        AppUser user = event.getParticipants()
+                .stream()
+                .filter(participant -> participant.getId().equals(participantId))
+                .findFirst()
+                .get();
         event.removeParticipant(user);
+        return ParticipantDTOMapper.mapToParticipantDTOs(event.getParticipants(), page);
     }
 
     private String getCityNameWithoutPlCharacters(String city) {
@@ -106,9 +110,9 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
     }
 
     private Event returnEventIfCurrentUserIsOrganizer(AppUser currentUser, Long id) {
-        Optional<Event> eventOptional = eventRepository.findById(id);
-        if (eventOptional.isPresent()) {
-            Event event = eventOptional.get();
+        Optional<Event> eventOpt = eventRepository.findById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
             if (!currentUser.equals(event.getOrganizer())) {
                 throw new AccessDeniedException("Access is denied");
             }
@@ -123,7 +127,7 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
         if (source.getName() != null && !source.getName().equals(target.getName())) {
             target.setName(source.getName());
         }
-        if (!source.getEventImage().isEmpty()) {
+        if (source.getEventImage() != null && !source.getEventImage().isEmpty()) {
             eventImageService.updateEventImage(target, source.getEventImage()).ifPresent(target::setEventImage);
         }
         if (source.getDateTime() != null && !source.getDateTime().equals(target.getDateTime().toString())) {

@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventEditDTO {
-    private Long id;
     @NotNull(message = "{form.field.name.error.notNull.message}")
     @NotEmpty(message = "{form.field.name.error.notEmpty.message}")
     private String name;
@@ -51,7 +50,6 @@ public class EventEditDTO {
     }
 
     public static class EventEditDTOBuilder {
-        private Long id;
         private String name;
         private String imageType;
         private String imageData;
@@ -64,11 +62,6 @@ public class EventEditDTO {
         private String location;
         private String address;
         private String description;
-
-        public EventEditDTOBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
 
         public EventEditDTOBuilder name(String name) {
             this.name = name;
@@ -132,7 +125,6 @@ public class EventEditDTO {
 
         public EventEditDTO build() {
             EventEditDTO eventData = new EventEditDTO();
-            eventData.setId(id);
             eventData.setName(name);
             eventData.setImageType(imageType);
             eventData.setImageData(imageData);
