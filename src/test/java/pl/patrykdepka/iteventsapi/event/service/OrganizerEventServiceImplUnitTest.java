@@ -18,8 +18,10 @@ import pl.patrykdepka.iteventsapi.event.repository.EventRepository;
 import pl.patrykdepka.iteventsapi.eventimage.service.EventImageService;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.times;
 import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ORGANIZER;
 
 class OrganizerEventServiceImplUnitTest {
-    static final LocalDateTime DATE_TIME = LocalDateTime.now().withHour(18).withMinute(0);
+    static final LocalDateTime DATE_TIME = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).withHour(18).withMinute(0);
     static final PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "dateTime"));
     private EventRepository eventRepository;
     private EventImageService eventImageService;
@@ -164,7 +166,6 @@ class OrganizerEventServiceImplUnitTest {
         EventEditDTO returnedEventToEdit = organizerEventServiceImpl.findEventToEdit(organizer, event.getId());
         // then
         assertThat(returnedEventToEdit).isNotNull();
-        assertThat(returnedEventToEdit.getId()).isEqualTo(event.getId());
         assertThat(returnedEventToEdit.getName()).isEqualTo(event.getName());
         assertThat(returnedEventToEdit).isNotNull();
         assertThat(returnedEventToEdit.getImageType()).isEqualTo(event.getEventImage().getFileType());
@@ -197,9 +198,9 @@ class OrganizerEventServiceImplUnitTest {
         AppUser organizer = AppUserCreator.create(4L, "Jan", "Nowak", ROLE_ORGANIZER);
         Event event = EventCreator.create(1L, "Java Dev Talks #1", DATE_TIME, organizer);
         when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
-        EventEditDTO newEventData = EventEditDTOCreator.create(event.getId(), DATE_TIME);
+        EventEditDTO newEventData = EventEditDTOCreator.create(DATE_TIME);
         // when
-        organizerEventServiceImpl.updateEvent(organizer, newEventData);
+        organizerEventServiceImpl.updateEvent(organizer, event.getId(), newEventData);
         // then
         verify(eventRepository, times(1)).findById(eq(event.getId()));
     }
@@ -230,7 +231,7 @@ class OrganizerEventServiceImplUnitTest {
         event.addParticipant(user2);
         when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
         // when
-        organizerEventServiceImpl.removeParticipant(organizer, event.getId(), user2.getId());
+        organizerEventServiceImpl.removeParticipant(organizer, event.getId(), user2.getId(), pageRequest);
         // then
         assertThat(event.getParticipants()).isNotEmpty();
         assertThat(event.getParticipants()).hasSize(1);
