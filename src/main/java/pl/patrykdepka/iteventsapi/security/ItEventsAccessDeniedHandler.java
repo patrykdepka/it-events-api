@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import pl.patrykdepka.iteventsapi.core.ErrorResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

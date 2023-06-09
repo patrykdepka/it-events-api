@@ -65,11 +65,8 @@ public class AppUserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<AppUserProfileDTO> getUserProfile(@PathVariable Long id) {
-        return appUserService
-                .findUserProfileByUserId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public AppUserProfileDTO getUserProfile(@PathVariable Long id) {
+        return appUserService.findUserProfileByUserId(id);
     }
 
     @GetMapping("/settings/profile")

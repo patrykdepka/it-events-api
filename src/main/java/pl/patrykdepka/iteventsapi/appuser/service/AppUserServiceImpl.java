@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.patrykdepka.iteventsapi.appuser.dto.*;
+import pl.patrykdepka.iteventsapi.appuser.exception.AppUserNotFoundException;
 import pl.patrykdepka.iteventsapi.appuser.exception.IncorrectCurrentPasswordException;
 import pl.patrykdepka.iteventsapi.appuser.mapper.AppUserProfileDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.mapper.AppUserProfileEditDTOMapper;
@@ -86,10 +87,11 @@ public class AppUserServiceImpl implements AppUserService {
         return Page.empty();
     }
 
-    public Optional<AppUserProfileDTO> findUserProfileByUserId(Long id) {
+    public AppUserProfileDTO findUserProfileByUserId(Long id) {
         return appUserRepository
                 .findById(id)
-                .map(AppUserProfileDTOMapper::mapToAppUserProfileDTO);
+                .map(AppUserProfileDTOMapper::mapToAppUserProfileDTO)
+                .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
     }
 
     public AppUserProfileEditDTO findUserProfileToEdit(AppUser currentUser) {

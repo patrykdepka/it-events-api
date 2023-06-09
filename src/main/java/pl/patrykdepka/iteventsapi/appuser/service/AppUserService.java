@@ -5,8 +5,6 @@ import org.springframework.data.domain.Pageable;
 import pl.patrykdepka.iteventsapi.appuser.dto.*;
 import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
 
-import java.util.Optional;
-
 public interface AppUserService {
 
     boolean checkIfUserExists(String email);
@@ -19,7 +17,7 @@ public interface AppUserService {
 
     Page<AppUserTableDTO> findUsersBySearch(String searchQuery, Pageable page);
 
-    Optional<AppUserProfileDTO> findUserProfileByUserId(Long id);
+    AppUserProfileDTO findUserProfileByUserId(Long id);
 
     AppUserProfileEditDTO findUserProfileToEdit(AppUser currentUser);
 
