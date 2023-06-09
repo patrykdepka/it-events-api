@@ -193,7 +193,7 @@ class AppUserServiceImplUnitTest {
         AppUser user = AppUserCreator.create(2L, "Jan", "Kowalski");
         when(appUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
         // when
-        AppUserProfileDTO returnedUserProfile = appUserServiceImpl.findUserProfileByUserId(user.getId()).get();
+        AppUserProfileDTO returnedUserProfile = appUserServiceImpl.findUserProfileByUserId(user.getId());
         // then
         assertThat(returnedUserProfile).isNotNull();
         assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getFileType());
