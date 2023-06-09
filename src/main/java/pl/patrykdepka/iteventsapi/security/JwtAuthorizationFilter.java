@@ -5,6 +5,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -51,6 +52,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 }
             } catch (JWTVerificationException ex) {
                 logger.error("Token is incorrect or expired");
+            } catch (UsernameNotFoundException ex) {
+                logger.error(ex.getMessage());
             }
         }
 
