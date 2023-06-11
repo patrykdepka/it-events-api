@@ -3,9 +3,10 @@ package pl.patrykdepka.iteventsapi.appuser.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
+import pl.patrykdepka.iteventsapi.core.DateTime;
 import pl.patrykdepka.iteventsapi.core.Image;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -17,16 +18,14 @@ public class AdminAppUserProfileEditDTO {
     private String profileImageData;
     @Image(width = 250, height = 250)
     private MultipartFile profileImage;
-    @NotNull(message = "{form.field.firstName.error.notNull.message}")
-    @NotEmpty(message = "{form.field.firstName.error.notEmpty.message}")
+    @NotBlank(message = "{form.field.firstName.error.notBlank.message}")
     @Size(min = 2, max = 50, message = "{form.field.firstName.error.size.message}")
     private String firstName;
-    @NotNull(message = "{form.field.lastName.error.notNull.message}")
-    @NotEmpty(message = "{form.field.lastName.error.notEmpty.message}")
+    @NotBlank(message = "{form.field.lastName.error.notBlank.message}")
     @Size(min = 2, max = 50, message = "{form.field.lastName.error.size.message}")
     private String lastName;
     @NotNull(message = "{form.field.dateOfBirth.error.notNull.message}")
-    @NotEmpty(message = "{form.field.dateOfBirth.error.notEmpty.message}")
+    @DateTime(iso = DateTime.ISO.DATE)
     private String dateOfBirth;
     @Size(max = 50, message = "{form.field.city.error.size.message}")
     private String city;

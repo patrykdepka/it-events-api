@@ -16,7 +16,7 @@ public class AdminAppUserAccountEditDTO {
     private boolean enabled;
     @NotNull(message = "{form.field.someField.error.notNull.message}")
     private boolean accountNonLocked;
-    @NotNull(message = "{form.field.someField.error.notNull.message}")
+    @NotNull(message = "{form.field.roles.error.notNull.message}")
     @NotEmpty(message = "{form.field.roles.error.notEmpty.message}")
     private List<Role> roles;
 

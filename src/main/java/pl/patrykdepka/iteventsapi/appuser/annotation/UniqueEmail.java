@@ -1,4 +1,6 @@
-package pl.patrykdepka.iteventsapi.core;
+package pl.patrykdepka.iteventsapi.appuser.annotation;
+
+import pl.patrykdepka.iteventsapi.appuser.validator.UniqueEmailValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,9 +11,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UniqueFieldValidator.class)
-public @interface UniqueField {
-    String message() default "{form.field.someField.error.uniqueValue.message}";
+@Constraint(validatedBy = UniqueEmailValidator.class)
+public @interface UniqueEmail {
+
+    String message() default "{validation.annotation.UniqueEmail.message}";
 
     Class<?>[] groups() default {};
 
