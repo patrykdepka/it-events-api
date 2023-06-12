@@ -47,6 +47,8 @@ public class SecurityConfig {
         http.headers().frameOptions().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests(request -> request
+                .antMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll()
+                .antMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/api/v1/home").permitAll()
                 .antMatchers("/api/v1/auth/signin", HttpMethod.POST.name()).permitAll()
