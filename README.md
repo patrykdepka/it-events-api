@@ -59,18 +59,16 @@ There are three user roles (ADMIN, ORGANIZER, USER).
 * AssertJ
 * OpenAPI
 ## How to run:
-1. Choose a profile
-<br>
+1. Choose a profile  
 There are two profiles - dev and prod. The dev profile uses the H2 database and the prod profile uses the MySQL database. The dev profile also contains test data. The prod profile contains only one user with admin role. Select one of the two Spring profiles (dev or prod) by setting the SPRING_PROFILES_ACTIVE environment variable or otherwise. You must set these additional environment variables before running:
-   * for dev profile:
-     * DB_NAME
-   * for prod profile:
-     * DB_NAME
-     * DB_USERNAME
-     * DB_PASSWORD
-2. Build the project: mvn clean install 
+* for dev profile:
+  * DB_NAME
+* for prod profile:
+  * DB_NAME
+  * DB_USERNAME
+  * DB_PASSWORD
+2. Build the project: mvn clean install
 3. Run the project: mvn spring-boot:run
 
-The application will be available at http://localhost:8080.
-<br>
+The application will be available at http://localhost:8080.  
 Swagger UI will be available at http://localhost:8080/swagger-ui.html.
