@@ -29,11 +29,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ADMIN;
 import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_USER;
 
@@ -87,6 +84,7 @@ class AppUserServiceImplUnitTest {
         AppUserRegistrationDTO newUserData = AppUserRegistrationDTOCreator.create();
         when(profileImageService.createDefaultProfileImage()).thenReturn(ProfileImageCreator.createDefaultProfileImage());
         when(passwordEncoder.encode(newUserData.getPassword())).thenReturn("{bcrypt}$2a$10$r7EjB7rf4j4SJ/ZVYUVT6.AIcaz6VNOGqNGr6mWAURZleQS2bSLie");
+        when(appUserRepository.save(any(AppUser.class))).thenAnswer(i -> i.getArguments()[0]);
         // when
         appUserServiceImpl.createUser(newUserData);
         // then

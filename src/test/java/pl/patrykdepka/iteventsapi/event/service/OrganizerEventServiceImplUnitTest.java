@@ -58,7 +58,7 @@ class OrganizerEventServiceImplUnitTest {
         when(eventImageService.createDefaultEventImage()).thenReturn(EventImageCreator.createDefaultEventImage(1L));
         when(eventRepository.save(any(Event.class))).thenAnswer(i -> i.getArguments()[0]);
         // when
-        EventDTO returnedCreatedEvent = organizerEventServiceImpl.createEvent(organizer, newEventData);
+        organizerEventServiceImpl.createEvent(organizer, newEventData);
         // then
         verify(eventRepository, times(1)).save(argThat((Event savedEvent) -> {
             Assertions.assertAll("Testing saved event",

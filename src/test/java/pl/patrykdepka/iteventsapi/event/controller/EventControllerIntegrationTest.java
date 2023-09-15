@@ -254,7 +254,7 @@ class EventControllerIntegrationTest {
                 .post("/api/v1/events/" + event.getId() + "/join");
         MvcResult result = mockMvc.perform(request)
                 .andDo(print())
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
         // then
         EventDTO returnedEvent = objectMapper.readValue(result.getResponse().getContentAsString(), EventDTO.class);
@@ -281,7 +281,7 @@ class EventControllerIntegrationTest {
                 .post("/api/v1/events/" + event.getId() + "/leave");
         MvcResult result = mockMvc.perform(request)
                 .andDo(print())
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
         // then
         EventDTO returnedEvent = objectMapper.readValue(result.getResponse().getContentAsString(), EventDTO.class);

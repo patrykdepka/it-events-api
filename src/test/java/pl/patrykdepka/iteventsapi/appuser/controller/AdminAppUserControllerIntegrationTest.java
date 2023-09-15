@@ -192,11 +192,16 @@ class AdminAppUserControllerIntegrationTest {
 
     @Test
     @Transactional
-    @WithMockUser(username = "admin@example.com", roles = {"ADMIN"})
+    @WithMockUser(username = "adminadmin@example.com", roles = {"ADMIN"})
     void shouldReturnUpdatedUserAccount() throws Exception {
         // given
+        AppUser admin = AppUserCreator.create("Admin", "Admin", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN);
         AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
-        appUserRepository.save(user);
+        List<AppUser> users = List.of(
+                admin,
+                user
+        );
+        appUserRepository.saveAll(users);
         AdminAppUserAccountEditDTO newUserAccountData = AdminAppUserAccountEditDTO.builder()
                 .enabled(false)
                 .accountNonLocked(false)
@@ -242,8 +247,13 @@ class AdminAppUserControllerIntegrationTest {
     @WithMockUser(username = "adminadmin@example.com", roles = {"ADMIN"})
     void shouldReturnUpdatedUserProfile() throws Exception {
         // given
+        AppUser admin = AppUserCreator.create("Admin", "Admin", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN);
         AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
-        appUserRepository.save(user);
+        List<AppUser> users = List.of(
+                admin,
+                user
+        );
+        appUserRepository.saveAll(users);
         AdminAppUserProfileEditDTO newUserProfileData = AdminAppUserProfileEditDTOCreator.create();
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
