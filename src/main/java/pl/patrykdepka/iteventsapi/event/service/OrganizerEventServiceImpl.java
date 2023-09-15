@@ -1,6 +1,8 @@
 package pl.patrykdepka.iteventsapi.event.service;
 
 import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,6 +27,7 @@ import java.util.Optional;
 
 @Service
 public class OrganizerEventServiceImpl implements OrganizerEventService {
+    private final Logger logger = LoggerFactory.getLogger(OrganizerEventServiceImpl.class);
     private final EventRepository eventRepository;
     private final EventImageService eventImageService;
 
@@ -46,7 +49,9 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
         event.setAddress(newEventData.getAddress());
         event.setOrganizer(currentUser);
         event.setDescription(newEventData.getDescription());
-        return EventDTOMapper.mapToEventDTO(eventRepository.save(event), currentUser);
+        Event createdEvent = eventRepository.save(event);
+        logger.info("Event [ID: " + createdEvent.getId() + "] created by user [ID: " + currentUser.getId() + "]");
+        return EventDTOMapper.mapToEventDTO(createdEvent, currentUser);
     }
 
     public List<CityDTO> findAllCities() {
@@ -79,6 +84,7 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
         if (eventOpt.isPresent()) {
             Event event = eventOpt.get();
             setEventFields(eventEditData, event);
+            logger.info("Event [ID: " + event.getId() + "] updated by user [ID: " + currentUser.getId() + "]");
             return EventEditDTOMapper.mapToEventEditDTO(event);
         }
 
@@ -93,12 +99,15 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
     @Transactional
     public Page<ParticipantDTO> removeParticipant(AppUser currentUser, Long eventId, Long participantId, Pageable page) {
         Event event = returnEventIfCurrentUserIsOrganizer(currentUser, eventId);
-        AppUser user = event.getParticipants()
+        Optional<AppUser> userOpt = event.getParticipants()
                 .stream()
                 .filter(participant -> participant.getId().equals(participantId))
-                .findFirst()
-                .get();
-        event.removeParticipant(user);
+                .findFirst();
+        if (userOpt.isPresent()) {
+            AppUser user = userOpt.get();
+            event.removeParticipant(user);
+            logger.info("User [ID: " + user.getId() + "] removed from event [ID: " + event.getId() + "] participants list by user [ID: " + currentUser.getId() + "]");
+        }
         return ParticipantDTOMapper.mapToParticipantDTOs(event.getParticipants(), page);
     }
 
@@ -123,7 +132,7 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
         throw new EventNotFoundException("Event with ID " + id + " not found");
     }
 
-    private Event setEventFields(EventEditDTO source, Event target) {
+    private void setEventFields(EventEditDTO source, Event target) {
         if (source.getName() != null && !source.getName().equals(target.getName())) {
             target.setName(source.getName());
         }
@@ -154,7 +163,5 @@ public class OrganizerEventServiceImpl implements OrganizerEventService {
         if (source.getDescription() != null && !source.getDescription().equals(target.getDescription())) {
             target.setDescription(source.getDescription());
         }
-
-        return target;
     }
 }

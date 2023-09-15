@@ -13,11 +13,11 @@ public interface AdminAppUserService {
 
     AdminAppUserAccountEditDTO findUserAccountToEdit(Long id);
 
-    AdminAppUserAccountEditDTO updateUserAccount(Long id, AdminAppUserAccountEditDTO userAccount);
+    AdminAppUserAccountEditDTO updateUserAccount(AppUser currentUser, Long id, AdminAppUserAccountEditDTO userAccount);
 
     AdminAppUserProfileEditDTO findUserProfileToEdit(Long id);
 
-    AdminAppUserProfileEditDTO updateUserProfile(Long id, AdminAppUserProfileEditDTO userProfile);
+    AdminAppUserProfileEditDTO updateUserProfile(AppUser currentUser, Long id, AdminAppUserProfileEditDTO userProfile);
 
     void updateUserPassword(AppUser currentUser, Long id, AdminAppUserPasswordEditDTO newUserPassword);
 

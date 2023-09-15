@@ -1,6 +1,8 @@
 package pl.patrykdepka.iteventsapi.event.service;
 
 import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
+    private final Logger logger = LoggerFactory.getLogger(EventServiceImpl.class);
     private final EventRepository eventRepository;
 
     public EventServiceImpl(EventRepository eventRepository) {
@@ -74,6 +77,7 @@ public class EventServiceImpl implements EventService {
             Event event = eventOpt.get();
             if (!event.checkIfUserIsParticipant(currentUser)) {
                 event.addParticipant(currentUser);
+                logger.info("User [ID: " + currentUser.getId() + "] added to event [ID: " + event.getId() + "] participants list");
             }
 
             return EventDTOMapper.mapToEventDTO(event, currentUser);
@@ -89,6 +93,7 @@ public class EventServiceImpl implements EventService {
             Event event = eventOpt.get();
             if (event.checkIfUserIsParticipant(currentUser)) {
                 event.removeParticipant(currentUser);
+                logger.info("User [ID: " + currentUser.getId() + "] removed from event [ID: " + event.getId() + "] participants list");
             }
 
             return EventDTOMapper.mapToEventDTO(event, currentUser);

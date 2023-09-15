@@ -1,5 +1,7 @@
 package pl.patrykdepka.iteventsapi.appuser.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +28,7 @@ import java.util.Optional;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
+    private final Logger logger = LoggerFactory.getLogger(AppUserServiceImpl.class);
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProfileImageService profileImageService;
@@ -59,8 +62,9 @@ public class AppUserServiceImpl implements AppUserService {
         user.setEnabled(true);
         user.setAccountNonLocked(true);
         user.setRoles(List.of(Role.ROLE_USER));
-        appUserRepository.save(user);
-        return AppUserProfileDTOMapper.mapToAppUserProfileDTO(user);
+        AppUser createdUser = appUserRepository.save(user);
+        logger.info("User [ID: " + createdUser.getId() + "] created");
+        return AppUserProfileDTOMapper.mapToAppUserProfileDTO(createdUser);
     }
 
     public AppUserProfileDTO findUserProfile(AppUser currentUser) {
@@ -100,7 +104,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Transactional
     public AppUserProfileEditDTO updateUserProfile(AppUser currentUser, AppUserProfileEditDTO userProfile) {
-        return AppUserProfileEditDTOMapper.mapToAppUserProfileEditDTO(setUserProfileFields(userProfile, currentUser));
+        setUserProfileFields(userProfile, currentUser);
+        logger.info("User [ID: " + currentUser.getId() + "] updated his profile data");
+        return AppUserProfileEditDTOMapper.mapToAppUserProfileEditDTO(currentUser);
     }
 
     @Transactional
@@ -109,9 +115,10 @@ public class AppUserServiceImpl implements AppUserService {
             throw new IncorrectCurrentPasswordException();
         }
         currentUser.setPassword(passwordEncoder.encode(newUserPasswordData.getNewPassword()));
+        logger.info("User [ID: " + currentUser.getId() + "] updated his password");
     }
 
-    private AppUser setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {
+    private void setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {
         if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
             Optional<ProfileImage> profileImage = profileImageService.updateProfileImage(target, source.getProfileImage());
             if (profileImage.isPresent()) {
@@ -125,8 +132,6 @@ public class AppUserServiceImpl implements AppUserService {
         if (source.getBio() != null && !source.getBio().equals(target.getBio())) {
             target.setBio(source.getBio());
         }
-
-        return target;
     }
 
     private boolean checkIfCurrentPasswordIsCorrect(AppUser user, String currentPassword) {

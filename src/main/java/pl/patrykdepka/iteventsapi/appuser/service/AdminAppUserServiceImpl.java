@@ -1,5 +1,7 @@
 package pl.patrykdepka.iteventsapi.appuser.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,7 @@ import java.util.Optional;
 
 @Service
 public class AdminAppUserServiceImpl implements AdminAppUserService {
+    private final Logger logger = LoggerFactory.getLogger(AdminAppUserServiceImpl.class);
     private final AppUserRepository appUserRepository;
     private final ProfileImageService profileImageService;
     private final PasswordEncoder passwordEncoder;
@@ -65,12 +68,16 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
     }
 
     @Transactional
-    public AdminAppUserAccountEditDTO updateUserAccount(Long id, AdminAppUserAccountEditDTO userAccount) {
-        return appUserRepository
-                .findById(id)
-                .map(target -> setUserAccountFields(userAccount, target))
-                .map(AdminAppUserAccountEditDTOMapper::mapToAdminAppUserAccountEditDTO)
-                .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
+    public AdminAppUserAccountEditDTO updateUserAccount(AppUser currentUser, Long id, AdminAppUserAccountEditDTO userAccount) {
+        Optional<AppUser> userOpt = appUserRepository.findById(id);
+        if (userOpt.isPresent()) {
+            AppUser user = userOpt.get();
+            setUserAccountFields(userAccount, user);
+            logger.info("User [ID: " + user.getId() + "] account updated by user [ID: " + currentUser.getId() + "]");
+            return AdminAppUserAccountEditDTOMapper.mapToAdminAppUserAccountEditDTO(user);
+        }
+
+        throw new AppUserNotFoundException("User with ID " + id + " not found");
     }
 
     public AdminAppUserProfileEditDTO findUserProfileToEdit(Long id) {
@@ -81,12 +88,16 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
     }
 
     @Transactional
-    public AdminAppUserProfileEditDTO updateUserProfile(Long id, AdminAppUserProfileEditDTO userProfile) {
-        return appUserRepository
-                .findById(id)
-                .map(target -> setUserProfileFields(userProfile, target))
-                .map(AdminAppUserProfileEditDTOMapper::mapToAdminAppUserProfileEditDTO)
-                .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
+    public AdminAppUserProfileEditDTO updateUserProfile(AppUser currentUser, Long id, AdminAppUserProfileEditDTO userProfile) {
+        Optional<AppUser> userOpt = appUserRepository.findById(id);
+        if (userOpt.isPresent()) {
+            AppUser user = userOpt.get();
+            setUserProfileFields(userProfile, user);
+            logger.info("User [ID: " + user.getId() + "] profile updated by user [ID: " + currentUser.getId() + "]");
+            return AdminAppUserProfileEditDTOMapper.mapToAdminAppUserProfileEditDTO(user);
+        }
+
+        throw new AppUserNotFoundException("User with ID " + id + " not found");
     }
 
     @Transactional
@@ -95,16 +106,13 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
             throw new IncorrectCurrentPasswordException();
         }
 
-        appUserRepository
-                .findById(id)
-                .ifPresentOrElse(
-                        user -> {
-                            user.setPassword(passwordEncoder.encode(newUserPassword.getNewPassword()));
-                        },
-                        () -> {
-                            throw new AppUserNotFoundException("User with ID " + id + " not found");
-                        }
-                );
+        Optional<AppUser> userOpt = appUserRepository.findById(id);
+        if (userOpt.isEmpty()) {
+            throw new AppUserNotFoundException("User with ID " + id + " not found");
+        }
+        AppUser user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(newUserPassword.getNewPassword()));
+        logger.info("User [ID: " + user.getId() + "] password updated by user [ID: " + currentUser.getId() + "]");
     }
 
     public void deleteUser(AppUser currentUser, AdminDeleteAppUserDTO deleteUserData) {
@@ -114,10 +122,11 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
 
         if (!currentUser.getId().equals(deleteUserData.getId())) {
             appUserRepository.deleteById(deleteUserData.getId());
+            logger.info("User [ID: " + deleteUserData.getId() + "] deleted by user [ID: " + currentUser.getId() + "]");
         }
     }
 
-    private AppUser setUserAccountFields(AdminAppUserAccountEditDTO source, AppUser target) {
+    private void setUserAccountFields(AdminAppUserAccountEditDTO source, AppUser target) {
         if (source.isEnabled() != target.isEnabled()) {
             target.setEnabled(source.isEnabled());
         }
@@ -127,11 +136,9 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
         if (!source.getRoles().equals(target.getRoles())) {
             target.setRoles(source.getRoles());
         }
-
-        return target;
     }
 
-    private AppUser setUserProfileFields(AdminAppUserProfileEditDTO source, AppUser target) {
+    private void setUserProfileFields(AdminAppUserProfileEditDTO source, AppUser target) {
         if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
             Optional<ProfileImage> profileImage = profileImageService.updateProfileImage(target, source.getProfileImage());
             profileImage.ifPresent(target::setProfileImage);
@@ -151,8 +158,6 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
         if (source.getBio() != null && !source.getBio().equals(target.getBio())) {
             target.setBio(source.getBio());
         }
-
-        return target;
     }
 
     private boolean checkIfAdminPasswordIsCorrect(AppUser admin, String adminPassword) {

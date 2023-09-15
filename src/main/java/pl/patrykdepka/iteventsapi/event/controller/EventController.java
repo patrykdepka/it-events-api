@@ -75,24 +75,13 @@ public class EventController {
     @PostMapping("/events/{id}/join")
     public ResponseEntity<EventDTO> joinEvent(@PathVariable Long id) {
         EventDTO event = eventService.addUserToEventParticipantsList(currentUserFacade.getCurrentUser(), id);
-        URI eventUri = ServletUriComponentsBuilder
-                .fromUriString("/api/v1/events")
-                .path("/{id}")
-                .buildAndExpand(event.getId())
-                .toUri();
-        return ResponseEntity.created(eventUri).body(event);
-
+        return ResponseEntity.ok(event);
     }
 
     @PostMapping("/events/{id}/leave")
     public ResponseEntity<EventDTO> leaveEvent(@PathVariable Long id) {
         EventDTO event = eventService.removeUserFromEventParticipantsList(currentUserFacade.getCurrentUser(), id);
-        URI eventUri = ServletUriComponentsBuilder
-                .fromUriString("/api/v1/events")
-                .path("/{id}")
-                .buildAndExpand(event.getId())
-                .toUri();
-        return ResponseEntity.created(eventUri).body(event);
+        return ResponseEntity.ok(event);
     }
 
     @GetMapping("/events/my_events")

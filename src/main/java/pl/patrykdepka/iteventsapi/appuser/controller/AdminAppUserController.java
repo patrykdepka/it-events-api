@@ -65,7 +65,7 @@ public class AdminAppUserController {
     @PatchMapping("/admin/users/{id}/settings/account")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateUserAccount(@PathVariable Long id, @Valid @RequestBody AdminAppUserAccountEditDTO userAccount) {
-        adminAppUserService.updateUserAccount(id, userAccount);
+        adminAppUserService.updateUserAccount(currentUserFacade.getCurrentUser(), id, userAccount);
     }
 
     @GetMapping("/admin/users/{id}/settings/profile")
@@ -76,7 +76,7 @@ public class AdminAppUserController {
     @PatchMapping("/admin/users/{id}/settings/profile")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateUserProfile(@PathVariable Long id, @Valid @RequestBody AdminAppUserProfileEditDTO userProfile) {
-        adminAppUserService.updateUserProfile(id, userProfile);
+        adminAppUserService.updateUserProfile(currentUserFacade.getCurrentUser(), id, userProfile);
     }
 
     @PatchMapping("/admin/users/{id}/settings/password")
