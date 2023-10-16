@@ -5,8 +5,8 @@ public enum Role {
     ROLE_ORGANIZER("ORGANIZER", "Organizator"),
     ROLE_USER("USER", "Użytkownik");
 
-    private String role;
-    private String displayName;
+    private final String role;
+    private final String displayName;
 
     Role(String role, String displayName) {
         this.role = role;

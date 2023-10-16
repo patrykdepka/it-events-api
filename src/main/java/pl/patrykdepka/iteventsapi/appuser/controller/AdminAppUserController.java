@@ -1,6 +1,7 @@
 package pl.patrykdepka.iteventsapi.appuser.controller;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -39,8 +40,8 @@ public class AdminAppUserController {
                                                   @RequestParam(name = "sort_by", required = false) String sortProperty,
                                                   @RequestParam(name = "order_by", required = false) String sortDirection) {
         int page = pageNumber != null ? pageNumber : 1;
-        String property = sortProperty != null && !"".equals(sortProperty) ? sortProperty : "lastName";
-        String direction = sortDirection != null && !"".equals(sortDirection) ? sortDirection : "ASC";
+        String property = sortProperty != null && !sortProperty.isEmpty() ? sortProperty : "lastName";
+        String direction = sortDirection != null && !sortDirection.isEmpty() ? sortDirection : "ASC";
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.fromString(direction), property));
         return adminAppUserService.findAllUsers(pageRequest);
     }
@@ -51,8 +52,8 @@ public class AdminAppUserController {
                                                        @RequestParam(name = "sort_by", required = false) String sortProperty,
                                                        @RequestParam(name = "order_by", required = false) String sortDirection) {
         int page = pageNumber != null ? pageNumber : 1;
-        String property = sortProperty != null && !"".equals(sortProperty) ? sortProperty : "lastName";
-        String direction = sortDirection != null && !"".equals(sortDirection) ? sortDirection : "ASC";
+        String property = sortProperty != null && !sortProperty.isEmpty() ? sortProperty : "lastName";
+        String direction = sortDirection != null && !sortDirection.isEmpty() ? sortDirection : "ASC";
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.fromString(direction), property));
         return adminAppUserService.findUsersBySearch(searchQuery, pageRequest);
     }
@@ -85,9 +86,16 @@ public class AdminAppUserController {
             adminAppUserService.updateUserPassword(currentUserFacade.getCurrentUser(), id, newUserPassword);
             return ResponseEntity.noContent().build();
         } catch (IncorrectCurrentPasswordException e) {
-            IncorrectCurrentPasswordResponse incorrectCurrentPasswordResponse = new IncorrectCurrentPasswordResponse();
-            incorrectCurrentPasswordResponse.setAdminPassword(messageSource.getMessage("form.field.currentPassword.error.invalidCurrentPassword.message", null, Locale.getDefault()));
-            return ResponseEntity.badRequest().body(incorrectCurrentPasswordResponse);
+            return ResponseEntity.badRequest()
+                    .body(
+                            new IncorrectCurrentPasswordResponse(
+                                    messageSource.getMessage(
+                                            "form.field.currentPassword.error.invalidCurrentPassword.message",
+                                            null,
+                                            Locale.getDefault()
+                                    )
+                            )
+                    );
         }
     }
 
@@ -97,15 +105,23 @@ public class AdminAppUserController {
             adminAppUserService.deleteUser(currentUserFacade.getCurrentUser(), deleteUserData);
             return ResponseEntity.noContent().build();
         } catch (IncorrectCurrentPasswordException e) {
-            IncorrectCurrentPasswordResponse incorrectCurrentPasswordResponse = new IncorrectCurrentPasswordResponse();
-            incorrectCurrentPasswordResponse.setAdminPassword(messageSource.getMessage("form.field.currentPassword.error.invalidCurrentPassword.message", null, Locale.getDefault()));
-            return ResponseEntity.badRequest().body(incorrectCurrentPasswordResponse);
+            return ResponseEntity.badRequest()
+                    .body(
+                            new IncorrectCurrentPasswordResponse(
+                                    messageSource.getMessage(
+                                            "form.field.currentPassword.error.invalidCurrentPassword.message",
+                                            null,
+                                            Locale.getDefault()
+                                    )
+                            )
+                    );
         }
     }
 
     @Getter
     @Setter
+    @RequiredArgsConstructor
     private class IncorrectCurrentPasswordResponse {
-        private String adminPassword;
+        private final String adminPassword;
     }
 }

@@ -61,8 +61,7 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
     }
 
     public AdminAppUserAccountEditDTO findUserAccountToEdit(Long id) {
-        return appUserRepository
-                .findById(id)
+        return appUserRepository.findById(id)
                 .map(AdminAppUserAccountEditDTOMapper::mapToAdminAppUserAccountEditDTO)
                 .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
     }
@@ -72,8 +71,10 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
         Optional<AppUser> userOpt = appUserRepository.findById(id);
         if (userOpt.isPresent()) {
             AppUser user = userOpt.get();
-            setUserAccountFields(userAccount, user);
-            logger.info("User [ID: " + user.getId() + "] account updated by user [ID: " + currentUser.getId() + "]");
+            if (setUserAccountFields(userAccount, user)) {
+                logger.info("User [ID: " + user.getId() + "] account updated by user [ID: " + currentUser.getId() + "]");
+            }
+
             return AdminAppUserAccountEditDTOMapper.mapToAdminAppUserAccountEditDTO(user);
         }
 
@@ -81,8 +82,7 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
     }
 
     public AdminAppUserProfileEditDTO findUserProfileToEdit(Long id) {
-        return appUserRepository
-                .findById(id)
+        return appUserRepository.findById(id)
                 .map(AdminAppUserProfileEditDTOMapper::mapToAdminAppUserProfileEditDTO)
                 .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
     }
@@ -92,8 +92,10 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
         Optional<AppUser> userOpt = appUserRepository.findById(id);
         if (userOpt.isPresent()) {
             AppUser user = userOpt.get();
-            setUserProfileFields(userProfile, user);
-            logger.info("User [ID: " + user.getId() + "] profile updated by user [ID: " + currentUser.getId() + "]");
+            if (setUserProfileFields(userProfile, user)) {
+                logger.info("User [ID: " + user.getId() + "] profile updated by user [ID: " + currentUser.getId() + "]");
+            }
+
             return AdminAppUserProfileEditDTOMapper.mapToAdminAppUserProfileEditDTO(user);
         }
 
@@ -126,38 +128,57 @@ public class AdminAppUserServiceImpl implements AdminAppUserService {
         }
     }
 
-    private void setUserAccountFields(AdminAppUserAccountEditDTO source, AppUser target) {
+    private boolean setUserAccountFields(AdminAppUserAccountEditDTO source, AppUser target) {
+        boolean isUpdated = false;
+
         if (source.isEnabled() != target.isEnabled()) {
             target.setEnabled(source.isEnabled());
+            isUpdated = true;
         }
         if (source.isAccountNonLocked() != target.isAccountNonLocked()) {
             target.setAccountNonLocked(source.isAccountNonLocked());
+            isUpdated = true;
         }
         if (!source.getRoles().equals(target.getRoles())) {
             target.setRoles(source.getRoles());
+            isUpdated = true;
         }
+
+        return isUpdated;
     }
 
-    private void setUserProfileFields(AdminAppUserProfileEditDTO source, AppUser target) {
+    private boolean setUserProfileFields(AdminAppUserProfileEditDTO source, AppUser target) {
+        boolean isUpdated = false;
+
         if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
             Optional<ProfileImage> profileImage = profileImageService.updateProfileImage(target, source.getProfileImage());
-            profileImage.ifPresent(target::setProfileImage);
+            if (profileImage.isPresent()) {
+                target.setProfileImage(profileImage.get());
+                isUpdated = true;
+            }
         }
         if (source.getFirstName() != null && !source.getFirstName().equals(target.getFirstName())) {
             target.setFirstName(source.getFirstName());
+            isUpdated = true;
         }
         if (source.getLastName() != null && !source.getLastName().equals(target.getLastName())) {
             target.setLastName(source.getLastName());
+            isUpdated = true;
         }
         if (source.getDateOfBirth() != null && !source.getDateOfBirth().equals(target.getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
             target.setDateOfBirth(LocalDate.parse(source.getDateOfBirth(), DateTimeFormatter.ISO_LOCAL_DATE));
+            isUpdated = true;
         }
         if (source.getCity() != null && !source.getCity().equals(target.getCity())) {
             target.setCity(source.getCity());
+            isUpdated = true;
         }
         if (source.getBio() != null && !source.getBio().equals(target.getBio())) {
             target.setBio(source.getBio());
+            isUpdated = true;
         }
+
+        return isUpdated;
     }
 
     private boolean checkIfAdminPasswordIsCorrect(AppUser admin, String adminPassword) {

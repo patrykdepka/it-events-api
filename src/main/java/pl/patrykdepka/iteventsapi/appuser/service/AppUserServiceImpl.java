@@ -92,8 +92,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     public AppUserProfileDTO findUserProfileByUserId(Long id) {
-        return appUserRepository
-                .findById(id)
+        return appUserRepository.findById(id)
                 .map(AppUserProfileDTOMapper::mapToAppUserProfileDTO)
                 .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
     }
@@ -104,8 +103,10 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Transactional
     public AppUserProfileEditDTO updateUserProfile(AppUser currentUser, AppUserProfileEditDTO userProfile) {
-        setUserProfileFields(userProfile, currentUser);
-        logger.info("User [ID: " + currentUser.getId() + "] updated his profile data");
+        if (setUserProfileFields(userProfile, currentUser)) {
+            logger.info("User [ID: " + currentUser.getId() + "] updated his profile data");
+        }
+
         return AppUserProfileEditDTOMapper.mapToAppUserProfileEditDTO(currentUser);
     }
 
@@ -114,24 +115,32 @@ public class AppUserServiceImpl implements AppUserService {
         if (!checkIfCurrentPasswordIsCorrect(currentUser, newUserPasswordData.getCurrentPassword())) {
             throw new IncorrectCurrentPasswordException();
         }
+
         currentUser.setPassword(passwordEncoder.encode(newUserPasswordData.getNewPassword()));
         logger.info("User [ID: " + currentUser.getId() + "] updated his password");
     }
 
-    private void setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {
+    private boolean setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {
+        boolean isUpdated = false;
+
         if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
             Optional<ProfileImage> profileImage = profileImageService.updateProfileImage(target, source.getProfileImage());
             if (profileImage.isPresent()) {
                 target.setProfileImage(profileImage.get());
                 appUserDetailsService.updateAppUserDetails(target);
+                isUpdated = true;
             }
         }
         if (source.getCity() != null && !source.getCity().equals(target.getCity())) {
             target.setCity(source.getCity());
+            isUpdated = true;
         }
         if (source.getBio() != null && !source.getBio().equals(target.getBio())) {
             target.setBio(source.getBio());
+            isUpdated = true;
         }
+
+        return isUpdated;
     }
 
     private boolean checkIfCurrentPasswordIsCorrect(AppUser user, String currentPassword) {

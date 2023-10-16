@@ -46,8 +46,8 @@ public class AppUserController {
                                              @RequestParam(name = "sort_by", required = false) String sortProperty,
                                              @RequestParam(name = "order_by", required = false) String sortDirection) {
         int page = pageNumber != null ? pageNumber : 1;
-        String property = sortProperty != null && !"".equals(sortProperty) ? sortProperty : "lastName";
-        String direction = sortDirection != null && !"".equals(sortDirection) ? sortDirection : "ASC";
+        String property = sortProperty != null && !sortProperty.isEmpty() ? sortProperty : "lastName";
+        String direction = sortDirection != null && !sortDirection.isEmpty() ? sortDirection : "ASC";
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.fromString(direction), property));
         return appUserService.findAllUsers(pageRequest);
     }
@@ -58,8 +58,8 @@ public class AppUserController {
                                                   @RequestParam(name = "sort_by", required = false) String sortProperty,
                                                   @RequestParam(name = "order_by", required = false) String sortDirection) {
         int page = pageNumber != null ? pageNumber : 1;
-        String property = sortProperty != null && !"".equals(sortProperty) ? sortProperty : "lastName";
-        String direction = sortDirection != null && !"".equals(sortDirection) ? sortDirection : "ASC";
+        String property = sortProperty != null && !sortProperty.isEmpty() ? sortProperty : "lastName";
+        String direction = sortDirection != null && !sortDirection.isEmpty() ? sortDirection : "ASC";
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.fromString(direction), property));
         return appUserService.findUsersBySearch(searchQuery, pageRequest);
     }

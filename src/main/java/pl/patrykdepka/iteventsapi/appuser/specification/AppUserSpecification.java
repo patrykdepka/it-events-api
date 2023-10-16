@@ -12,17 +12,17 @@ public class AppUserSpecification {
 
     public static Specification<AppUser> bySearch(String searchWord) {
         return (root, query, criteriaBuilder) -> {
-            Predicate firstName = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + searchWord.toLowerCase() + "%");
-            Predicate lastName = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + searchWord.toLowerCase() + "%");
-            Predicate email = criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + searchWord.toLowerCase() + "%");
+            Predicate firstName = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + searchWord + "%");
+            Predicate lastName = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + searchWord + "%");
+            Predicate email = criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + searchWord + "%");
             return criteriaBuilder.or(firstName, lastName, email);
         };
     }
 
     public static Specification<AppUser> bySearch(String searchWord, String searchWord2) {
         return (root, query, criteriaBuilder) -> {
-            Predicate firstName = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + searchWord.toLowerCase() + "%");
-            Predicate lastName = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + searchWord2.toLowerCase() + "%");
+            Predicate firstName = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + searchWord + "%");
+            Predicate lastName = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + searchWord2 + "%");
             return criteriaBuilder.and(firstName, lastName);
         };
     }
