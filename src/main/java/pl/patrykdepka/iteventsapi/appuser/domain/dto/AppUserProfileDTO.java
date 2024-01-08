@@ -1,22 +1,17 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 public class AppUserProfileDTO {
-    private Long id;
-    private String profileImageType;
-    private String profileImageData;
-    private String firstName;
-    private String lastName;
-    private String dateOfBirth;
-    private String city;
-    private String bio;
-
-    private AppUserProfileDTO() {
-    }
+    Long id;
+    String profileImageType;
+    String profileImageData;
+    String firstName;
+    String lastName;
+    String dateOfBirth;
+    String city;
+    String bio;
 
     public static AppUserProfileDTOBuilder builder() {
         return new AppUserProfileDTOBuilder();
@@ -73,16 +68,16 @@ public class AppUserProfileDTO {
         }
 
         public AppUserProfileDTO build() {
-            AppUserProfileDTO userProfile = new AppUserProfileDTO();
-            userProfile.setId(id);
-            userProfile.setProfileImageType(profileImageType);
-            userProfile.setProfileImageData(profileImageData);
-            userProfile.setFirstName(firstName);
-            userProfile.setLastName(lastName);
-            userProfile.setDateOfBirth(dateOfBirth);
-            userProfile.setCity(city);
-            userProfile.setBio(bio);
-            return userProfile;
+            return new AppUserProfileDTO(
+                    id,
+                    profileImageType,
+                    profileImageData,
+                    firstName,
+                    lastName,
+                    dateOfBirth,
+                    city,
+                    bio
+            );
         }
     }
 }

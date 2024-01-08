@@ -1,24 +1,22 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 import pl.patrykdepka.iteventsapi.appuser.domain.Role;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Getter
-@Setter
+@Value
 public class AdminAppUserAccountEditDTO {
-    private Long id;
+    Long id;
     @NotNull(message = "{form.field.someField.error.notNull.message}")
-    private boolean enabled;
+    boolean enabled;
     @NotNull(message = "{form.field.someField.error.notNull.message}")
-    private boolean accountNonLocked;
+    boolean accountNonLocked;
     @NotNull(message = "{form.field.roles.error.notNull.message}")
     @NotEmpty(message = "{form.field.roles.error.notEmpty.message}")
-    private List<Role> roles;
+    List<Role> roles;
 
     public static AdminAppUserAccountEditDTOBuilder builder() {
         return new AdminAppUserAccountEditDTOBuilder();
@@ -51,12 +49,12 @@ public class AdminAppUserAccountEditDTO {
         }
 
         public AdminAppUserAccountEditDTO build() {
-            AdminAppUserAccountEditDTO userAccount = new AdminAppUserAccountEditDTO();
-            userAccount.setId(id);
-            userAccount.setEnabled(enabled);
-            userAccount.setAccountNonLocked(accountNonLocked);
-            userAccount.setRoles(roles);
-            return userAccount;
+            return new AdminAppUserAccountEditDTO(
+                    id,
+                    enabled,
+                    accountNonLocked,
+                    roles
+            );
         }
     }
 }

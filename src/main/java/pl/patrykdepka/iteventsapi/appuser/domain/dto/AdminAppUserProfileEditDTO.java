@@ -1,7 +1,6 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 import org.springframework.web.multipart.MultipartFile;
 import pl.patrykdepka.iteventsapi.core.DateTime;
 import pl.patrykdepka.iteventsapi.core.Image;
@@ -10,30 +9,26 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Getter
-@Setter
+@Value
 public class AdminAppUserProfileEditDTO {
-    private Long id;
-    private String profileImageType;
-    private String profileImageData;
+    Long id;
+    String profileImageType;
+    String profileImageData;
     @Image(width = 250, height = 250)
-    private MultipartFile profileImage;
+    MultipartFile profileImage;
     @NotBlank(message = "{form.field.firstName.error.notBlank.message}")
     @Size(min = 2, max = 50, message = "{form.field.firstName.error.size.message}")
-    private String firstName;
+    String firstName;
     @NotBlank(message = "{form.field.lastName.error.notBlank.message}")
     @Size(min = 2, max = 50, message = "{form.field.lastName.error.size.message}")
-    private String lastName;
+    String lastName;
     @NotNull(message = "{form.field.dateOfBirth.error.notNull.message}")
     @DateTime(iso = DateTime.ISO.DATE)
-    private String dateOfBirth;
+    String dateOfBirth;
     @Size(max = 50, message = "{form.field.city.error.size.message}")
-    private String city;
+    String city;
     @Size(max = 1000, message = "{form.field.bio.error.size.message}")
-    private String bio;
-
-    private AdminAppUserProfileEditDTO() {
-    }
+    String bio;
 
     public static AdminAppUserProfileEditDTOBuilder builder() {
         return new AdminAppUserProfileEditDTOBuilder();
@@ -96,17 +91,17 @@ public class AdminAppUserProfileEditDTO {
         }
 
         public AdminAppUserProfileEditDTO build() {
-            AdminAppUserProfileEditDTO userProfile = new AdminAppUserProfileEditDTO();
-            userProfile.setId(id);
-            userProfile.setFirstName(firstName);
-            userProfile.setLastName(lastName);
-            userProfile.setProfileImageType(profileImageType);
-            userProfile.setProfileImageData(profileImageData);
-            userProfile.setProfileImage(profileImage);
-            userProfile.setDateOfBirth(dateOfBirth);
-            userProfile.setCity(city);
-            userProfile.setBio(bio);
-            return userProfile;
+            return new AdminAppUserProfileEditDTO(
+                    id,
+                    profileImageType,
+                    profileImageData,
+                    profileImage,
+                    firstName,
+                    lastName,
+                    dateOfBirth,
+                    city,
+                    bio
+            );
         }
     }
 }

@@ -1,27 +1,22 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 import org.springframework.web.multipart.MultipartFile;
 import pl.patrykdepka.iteventsapi.core.Image;
 
 import javax.validation.constraints.Size;
 
-@Getter
-@Setter
+@Value
 public class AppUserProfileEditDTO {
     @Image(width = 250, height = 250)
-    private MultipartFile profileImage;
-    private String firstName;
-    private String lastName;
-    private String dateOfBirth;
+    MultipartFile profileImage;
+    String firstName;
+    String lastName;
+    String dateOfBirth;
     @Size(max = 50, message = "{form.field.city.error.size.message}")
-    private String city;
+    String city;
     @Size(max = 1000, message = "{form.field.bio.error.size.message}")
-    private String bio;
-
-    private AppUserProfileEditDTO() {
-    }
+    String bio;
 
     public static AppUserProfileEditDTOBuilder builder() {
         return new AppUserProfileEditDTOBuilder();
@@ -66,14 +61,14 @@ public class AppUserProfileEditDTO {
         }
 
         public AppUserProfileEditDTO build() {
-            AppUserProfileEditDTO userProfile = new AppUserProfileEditDTO();
-            userProfile.setProfileImage(profileImage);
-            userProfile.setFirstName(firstName);
-            userProfile.setLastName(lastName);
-            userProfile.setDateOfBirth(dateOfBirth);
-            userProfile.setCity(city);
-            userProfile.setBio(bio);
-            return userProfile;
+            return new AppUserProfileEditDTO(
+                    profileImage,
+                    firstName,
+                    lastName,
+                    dateOfBirth,
+                    city,
+                    bio
+            );
         }
     }
 }

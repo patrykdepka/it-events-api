@@ -1,21 +1,19 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 import pl.patrykdepka.iteventsapi.appuser.domain.Role;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Value
 public class AdminAppUserTableDTO {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private boolean enabled;
-    private boolean accountNonLocked;
-    private List<Role> roles;
+    Long id;
+    String firstName;
+    String lastName;
+    String email;
+    boolean enabled;
+    boolean accountNonLocked;
+    List<Role> roles;
 
     public static AdminAppUserTableDTOBuilder builder() {
         return new AdminAppUserTableDTOBuilder();
@@ -66,15 +64,15 @@ public class AdminAppUserTableDTO {
         }
 
         public AdminAppUserTableDTO build() {
-            AdminAppUserTableDTO userTable = new AdminAppUserTableDTO();
-            userTable.setId(id);
-            userTable.setFirstName(firstName);
-            userTable.setLastName(lastName);
-            userTable.setEmail(email);
-            userTable.setEnabled(enabled);
-            userTable.setAccountNonLocked(accountNonLocked);
-            userTable.setRoles(roles);
-            return userTable;
+            return new AdminAppUserTableDTO(
+                    id,
+                    firstName,
+                    lastName,
+                    email,
+                    enabled,
+                    accountNonLocked,
+                    roles
+            );
         }
     }
 }

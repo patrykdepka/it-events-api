@@ -1,15 +1,13 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 public class AppUserTableDTO {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
+    Long id;
+    String firstName;
+    String lastName;
+    String email;
 
     public static AppUserTableDTOBuilder builder() {
         return new AppUserTableDTOBuilder();
@@ -42,12 +40,12 @@ public class AppUserTableDTO {
         }
 
         public AppUserTableDTO build() {
-            AppUserTableDTO userTable = new AppUserTableDTO();
-            userTable.setId(id);
-            userTable.setFirstName(firstName);
-            userTable.setLastName(lastName);
-            userTable.setEmail(email);
-            return userTable;
+            return new AppUserTableDTO(
+                    id,
+                    firstName,
+                    lastName,
+                    email
+            );
         }
     }
 }
