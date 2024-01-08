@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.*;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.*;
 
 @Configuration
 public class SecurityConfig {

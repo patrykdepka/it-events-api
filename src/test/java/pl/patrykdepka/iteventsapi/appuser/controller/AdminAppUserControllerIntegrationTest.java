@@ -13,12 +13,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import pl.patrykdepka.iteventsapi.appuser.dto.AdminAppUserAccountEditDTO;
-import pl.patrykdepka.iteventsapi.appuser.dto.AdminAppUserPasswordEditDTO;
-import pl.patrykdepka.iteventsapi.appuser.dto.AdminAppUserProfileEditDTO;
-import pl.patrykdepka.iteventsapi.appuser.dto.AdminDeleteAppUserDTO;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
-import pl.patrykdepka.iteventsapi.appuser.repository.AppUserRepository;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserAccountEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserPasswordEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserProfileEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminDeleteAppUserDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
 import pl.patrykdepka.iteventsapi.creator.AdminAppUserProfileEditDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
@@ -32,8 +32,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ADMIN;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ORGANIZER;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ADMIN;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ORGANIZER;
 
 @SpringBootTest
 @AutoConfigureMockMvc

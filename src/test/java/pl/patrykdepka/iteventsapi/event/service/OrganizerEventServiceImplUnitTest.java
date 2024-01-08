@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.creator.*;
 import pl.patrykdepka.iteventsapi.event.dto.*;
 import pl.patrykdepka.iteventsapi.event.exception.EventNotFoundException;
@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ORGANIZER;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ORGANIZER;
 
 class OrganizerEventServiceImplUnitTest {
     static final LocalDateTime DATE_TIME = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).withHour(18).withMinute(0);

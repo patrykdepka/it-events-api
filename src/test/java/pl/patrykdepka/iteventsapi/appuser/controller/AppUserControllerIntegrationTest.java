@@ -1,7 +1,6 @@
 package pl.patrykdepka.iteventsapi.appuser.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,12 +13,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import pl.patrykdepka.iteventsapi.appuser.dto.AppUserPasswordEditDTO;
-import pl.patrykdepka.iteventsapi.appuser.dto.AppUserProfileDTO;
-import pl.patrykdepka.iteventsapi.appuser.dto.AppUserProfileEditDTO;
-import pl.patrykdepka.iteventsapi.appuser.dto.AppUserRegistrationDTO;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
-import pl.patrykdepka.iteventsapi.appuser.repository.AppUserRepository;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserPasswordEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserProfileDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserProfileEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserRegistrationDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
 import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserProfileEditDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserRegistrationDTOCreator;
@@ -35,8 +34,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ADMIN;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ORGANIZER;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ADMIN;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ORGANIZER;
 
 @SpringBootTest
 @AutoConfigureMockMvc

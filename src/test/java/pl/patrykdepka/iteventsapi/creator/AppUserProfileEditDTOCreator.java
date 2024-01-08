@@ -1,7 +1,7 @@
 package pl.patrykdepka.iteventsapi.creator;
 
-import pl.patrykdepka.iteventsapi.appuser.dto.AppUserProfileEditDTO;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserProfileEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 
 import java.time.format.DateTimeFormatter;
 

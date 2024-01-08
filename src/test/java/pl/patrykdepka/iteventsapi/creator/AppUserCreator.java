@@ -1,13 +1,13 @@
 package pl.patrykdepka.iteventsapi.creator;
 
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
-import pl.patrykdepka.iteventsapi.appuser.model.Role;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.Role;
 import pl.patrykdepka.iteventsapi.profileimage.model.ProfileImage;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_USER;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_USER;
 import static pl.patrykdepka.iteventsapi.creator.ProfileImageCreator.createDefaultProfileImage;
 
 public class AppUserCreator {

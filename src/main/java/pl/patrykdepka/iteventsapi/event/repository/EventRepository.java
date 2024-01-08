@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.event.model.Event;
 
 import java.time.LocalDateTime;

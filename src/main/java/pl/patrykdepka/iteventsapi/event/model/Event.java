@@ -2,7 +2,7 @@ package pl.patrykdepka.iteventsapi.event.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.core.BaseEntity;
 import pl.patrykdepka.iteventsapi.event.enumeration.AdmissionType;
 import pl.patrykdepka.iteventsapi.event.enumeration.EventType;

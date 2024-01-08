@@ -1,6 +1,6 @@
 package pl.patrykdepka.iteventsapi.creator;
 
-import pl.patrykdepka.iteventsapi.appuser.dto.AdminAppUserProfileEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserProfileEditDTO;
 
 public class AdminAppUserProfileEditDTOCreator {
 

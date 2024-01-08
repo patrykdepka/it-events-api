@@ -2,7 +2,7 @@ package pl.patrykdepka.iteventsapi.event.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.event.dto.CityDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventCardDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventDTO;

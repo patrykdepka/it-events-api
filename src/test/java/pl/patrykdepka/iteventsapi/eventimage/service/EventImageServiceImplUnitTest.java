@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.multipart.MultipartFile;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.EventCreator;
 import pl.patrykdepka.iteventsapi.creator.EventImageCreator;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ORGANIZER;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ORGANIZER;
 
 class EventImageServiceImplUnitTest {
     static final LocalDateTime DATE_TIME = LocalDateTime.now().withHour(18).withMinute(0);

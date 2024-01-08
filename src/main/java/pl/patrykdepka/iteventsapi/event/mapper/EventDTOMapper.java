@@ -1,6 +1,6 @@
 package pl.patrykdepka.iteventsapi.event.mapper;
 
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.model.Event;
 

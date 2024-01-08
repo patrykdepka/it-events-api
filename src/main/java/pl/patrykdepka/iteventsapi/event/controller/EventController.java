@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.patrykdepka.iteventsapi.appuser.facade.CurrentUserFacade;
+import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
 import pl.patrykdepka.iteventsapi.event.dto.CityDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventCardDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventDTO;

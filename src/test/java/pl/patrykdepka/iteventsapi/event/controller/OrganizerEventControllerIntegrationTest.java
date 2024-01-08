@@ -12,8 +12,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
-import pl.patrykdepka.iteventsapi.appuser.repository.AppUserRepository;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
 import pl.patrykdepka.iteventsapi.creator.*;
 import pl.patrykdepka.iteventsapi.event.dto.CreateEventDTO;
 import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static pl.patrykdepka.iteventsapi.appuser.model.Role.ROLE_ORGANIZER;
+import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ORGANIZER;
 
 @SpringBootTest
 @AutoConfigureMockMvc

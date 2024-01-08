@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.multipart.MultipartFile;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
 import pl.patrykdepka.iteventsapi.profileimage.model.ProfileImage;

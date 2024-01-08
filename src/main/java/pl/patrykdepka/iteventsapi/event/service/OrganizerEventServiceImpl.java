@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.patrykdepka.iteventsapi.appuser.model.AppUser;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.event.dto.*;
 import pl.patrykdepka.iteventsapi.event.exception.EventNotFoundException;
 import pl.patrykdepka.iteventsapi.event.mapper.EventCardDTOMapper;

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.patrykdepka.iteventsapi.appuser.facade.CurrentUserFacade;
+import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
 import pl.patrykdepka.iteventsapi.event.dto.*;
 import pl.patrykdepka.iteventsapi.event.exception.CityNotFoundException;
 import pl.patrykdepka.iteventsapi.event.service.OrganizerEventService;
