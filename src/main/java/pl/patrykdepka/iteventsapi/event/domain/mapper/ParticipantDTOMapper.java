@@ -20,10 +20,10 @@ public class ParticipantDTOMapper {
     }
 
     private static ParticipantDTO mapToParticipantDTO(AppUser user) {
-        ParticipantDTO participant = new ParticipantDTO();
-        participant.setId(user.getId());
-        participant.setFirstName(user.getFirstName());
-        participant.setLastName(user.getLastName());
-        return participant;
+        return new ParticipantDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName()
+        );
     }
 }

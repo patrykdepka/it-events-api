@@ -10,35 +10,31 @@ import pl.patrykdepka.iteventsapi.event.domain.EventType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class EventEditDTO {
     @NotBlank(message = "{form.field.name.error.notBlank.message}")
-    private String name;
-    private String imageType;
-    private String imageData;
+    String name;
+    String imageType;
+    String imageData;
     @Image(width = 480, height = 270)
-    private MultipartFile eventImage;
+    MultipartFile eventImage;
     @NotNull(message = "{form.field.eventType.error.notNull.message}")
-    private EventType eventType;
+    EventType eventType;
     @NotNull(message = "{form.field.dateOfBirth.error.notNull.message}")
     @DateTime(message = "{validation.annotation.DateTime.dateTime.invalidFormat.message}", iso = DateTime.ISO.DATE_TIME)
-    private String dateTime;
+    String dateTime;
     @NotBlank(message = "{form.field.language.error.notBlank.message}")
-    private String language;
+    String language;
     @NotNull(message = "{form.field.admission.error.notNull.message}")
-    private AdmissionType admission;
+    AdmissionType admission;
     @NotBlank(message = "{form.field.city.error.notBlank.message}")
-    private String city;
+    String city;
     @NotBlank(message = "{form.field.location.error.notBlank.message}")
-    private String location;
+    String location;
     @NotBlank(message = "{form.field.address.error.notBlank.message}")
-    private String address;
+    String address;
     @NotBlank(message = "{form.field.description.error.notBlank.message}")
-    private String description;
+    String description;
 
     public static EventEditDTOBuilder builder() {
         return new EventEditDTOBuilder();
@@ -119,20 +115,20 @@ public class EventEditDTO {
         }
 
         public EventEditDTO build() {
-            EventEditDTO eventData = new EventEditDTO();
-            eventData.setName(name);
-            eventData.setImageType(imageType);
-            eventData.setImageData(imageData);
-            eventData.setEventImage(eventImage);
-            eventData.setEventType(eventType);
-            eventData.setDateTime(dateTime);
-            eventData.setLanguage(language);
-            eventData.setAdmission(admission);
-            eventData.setCity(city);
-            eventData.setLocation(location);
-            eventData.setAddress(address);
-            eventData.setDescription(description);
-            return eventData;
+            return new EventEditDTO(
+                    name,
+                    imageType,
+                    imageData,
+                    eventImage,
+                    eventType,
+                    dateTime,
+                    language,
+                    admission,
+                    city,
+                    location,
+                    address,
+                    description
+            );
         }
     }
 }

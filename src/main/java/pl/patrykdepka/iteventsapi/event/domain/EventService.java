@@ -44,9 +44,10 @@ public class EventService {
         List<String> cities = eventRepository.findAllCities();
         List<CityDTO> cityDTOs = new ArrayList<>();
         for (String city : cities) {
-            CityDTO cityDTO = new CityDTO();
-            cityDTO.setNameWithoutPlCharacters(getCityNameWithoutPlCharacters(city));
-            cityDTO.setDisplayName(city);
+            CityDTO cityDTO = new CityDTO(
+                    getCityNameWithoutPlCharacters(city),
+                    city
+            );
             cityDTOs.add(cityDTO);
         }
         return cityDTOs;

@@ -1,18 +1,16 @@
 package pl.patrykdepka.iteventsapi.event.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 public class EventCardDTO {
-    private Long id;
-    private String date;
-    private String dayOfWeek;
-    private String name;
-    private String city;
-    private String eventType;
-    private String admission;
+    Long id;
+    String date;
+    String dayOfWeek;
+    String name;
+    String city;
+    String eventType;
+    String admission;
 
     public static EventCardDTOBuilder builder() {
         return new EventCardDTOBuilder();
@@ -63,15 +61,15 @@ public class EventCardDTO {
         }
 
         public EventCardDTO build() {
-            EventCardDTO eventCard = new EventCardDTO();
-            eventCard.setId(id);
-            eventCard.setDate(date);
-            eventCard.setDayOfWeek(dayOfWeek);
-            eventCard.setName(name);
-            eventCard.setCity(city);
-            eventCard.setEventType(eventType);
-            eventCard.setAdmission(admission);
-            return eventCard;
+            return new EventCardDTO(
+                    id,
+                    date,
+                    dayOfWeek,
+                    name,
+                    city,
+                    eventType,
+                    admission
+            );
         }
     }
 }

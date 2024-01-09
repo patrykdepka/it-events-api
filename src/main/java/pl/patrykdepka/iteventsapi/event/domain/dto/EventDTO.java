@@ -1,29 +1,27 @@
 package pl.patrykdepka.iteventsapi.event.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 public class EventDTO {
-    private Long id;
-    private String name;
-    private String imageType;
-    private String imageData;
-    private String eventType;
-    private String date;
-    private String hour;
-    private String language;
-    private String admission;
-    private String city;
-    private String location;
-    private String address;
-    private Long organizerId;
-    private String organizerImageType;
-    private String organizerImageData;
-    private String organizerName;
-    private String description;
-    private boolean currentUserIsParticipant;
+    Long id;
+    String name;
+    String imageType;
+    String imageData;
+    String eventType;
+    String date;
+    String hour;
+    String language;
+    String admission;
+    String city;
+    String location;
+    String address;
+    Long organizerId;
+    String organizerImageType;
+    String organizerImageData;
+    String organizerName;
+    String description;
+    boolean currentUserIsParticipant;
 
     public static class EventDTOBuilder {
         private Long id;
@@ -136,26 +134,26 @@ public class EventDTO {
         }
 
         public EventDTO build() {
-            EventDTO event = new EventDTO();
-            event.setId(id);
-            event.setName(name);
-            event.setImageType(imageType);
-            event.setImageData(imageData);
-            event.setEventType(eventType);
-            event.setDate(date);
-            event.setHour(hour);
-            event.setLanguage(language);
-            event.setAdmission(admission);
-            event.setCity(city);
-            event.setLocation(location);
-            event.setAddress(address);
-            event.setOrganizerId(organizerId);
-            event.setOrganizerImageType(organizerImageType);
-            event.setOrganizerImageData(organizerImageData);
-            event.setOrganizerName(organizerName);
-            event.setDescription(description);
-            event.setCurrentUserIsParticipant(currentUserIsParticipant);
-            return event;
+            return new EventDTO(
+                    id,
+                    name,
+                    imageType,
+                    imageData,
+                    eventType,
+                    date,
+                    hour,
+                    language,
+                    admission,
+                    city,
+                    location,
+                    address,
+                    organizerId,
+                    organizerImageType,
+                    organizerImageData,
+                    organizerName,
+                    description,
+                    currentUserIsParticipant
+            );
         }
     }
 }

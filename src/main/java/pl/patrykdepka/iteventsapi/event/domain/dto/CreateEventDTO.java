@@ -8,31 +8,31 @@ import pl.patrykdepka.iteventsapi.event.domain.EventType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class CreateEventDTO {
     @NotBlank(message = "{form.field.name.error.notBlank.message}")
-    private String name;
+    String name;
     @NotNull(message = "{form.field.eventType.error.notNull.message}")
-    private EventType eventType;
+    EventType eventType;
     @NotNull(message = "{form.field.dateOfBirth.error.notNull.message}")
     @DateTime(message = "{validation.annotation.DateTime.dateTime.invalidFormat.message}", iso = DateTime.ISO.DATE_TIME)
-    private String dateTime;
+    String dateTime;
     @NotBlank(message = "{form.field.language.error.notBlank.message}")
-    private String language;
+    String language;
     @NotNull(message = "{form.field.admission.error.notNull.message}")
-    private AdmissionType admission;
+    AdmissionType admission;
     @NotBlank(message = "{form.field.city.error.notBlank.message}")
-    private String city;
+    String city;
     @NotBlank(message = "{form.field.location.error.notBlank.message}")
-    private String location;
+    String location;
     @NotBlank(message = "{form.field.address.error.notBlank.message}")
-    private String address;
+    String address;
     @NotBlank(message = "{form.field.description.error.notBlank.message}")
-    private String description;
+    String description;
+
+    public static CreateEventDTOBuilder builder() {
+        return new CreateEventDTOBuilder();
+    }
 
     public static class CreateEventDTOBuilder {
         private String name;
@@ -91,17 +91,17 @@ public class CreateEventDTO {
         }
 
         public CreateEventDTO build() {
-            CreateEventDTO newEventData = new CreateEventDTO();
-            newEventData.setName(name);
-            newEventData.setEventType(eventType);
-            newEventData.setDateTime(dateTime);
-            newEventData.setLanguage(language);
-            newEventData.setAdmission(admission);
-            newEventData.setCity(city);
-            newEventData.setLocation(location);
-            newEventData.setAddress(address);
-            newEventData.setDescription(description);
-            return newEventData;
+            return new CreateEventDTO(
+                    name,
+                    eventType,
+                    dateTime,
+                    language,
+                    admission,
+                    city,
+                    location,
+                    address,
+                    description
+            );
         }
     }
 }

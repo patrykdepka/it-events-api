@@ -1,12 +1,10 @@
 package pl.patrykdepka.iteventsapi.event.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 public class ParticipantDTO {
-    private Long id;
-    private String firstName;
-    private String lastName;
+    Long id;
+    String firstName;
+    String lastName;
 }
