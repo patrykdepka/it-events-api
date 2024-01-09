@@ -18,10 +18,10 @@ import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.EventCreator;
 import pl.patrykdepka.iteventsapi.creator.EventImageCreator;
 import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
-import pl.patrykdepka.iteventsapi.event.dto.EventCardDTO;
-import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
-import pl.patrykdepka.iteventsapi.event.model.Event;
-import pl.patrykdepka.iteventsapi.event.repository.EventRepository;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventCardDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.Event;
+import pl.patrykdepka.iteventsapi.event.domain.EventRepository;
 import pl.patrykdepka.iteventsapi.eventimage.repository.EventImageRepository;
 import pl.patrykdepka.iteventsapi.profileimage.repository.ProfileImageRepository;
 

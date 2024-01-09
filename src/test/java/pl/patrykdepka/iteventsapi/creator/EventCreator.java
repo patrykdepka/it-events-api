@@ -1,9 +1,9 @@
 package pl.patrykdepka.iteventsapi.creator;
 
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
-import pl.patrykdepka.iteventsapi.event.enumeration.AdmissionType;
-import pl.patrykdepka.iteventsapi.event.enumeration.EventType;
-import pl.patrykdepka.iteventsapi.event.model.Event;
+import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
+import pl.patrykdepka.iteventsapi.event.domain.EventType;
+import pl.patrykdepka.iteventsapi.event.domain.Event;
 import pl.patrykdepka.iteventsapi.eventimage.model.EventImage;
 
 import java.time.LocalDateTime;

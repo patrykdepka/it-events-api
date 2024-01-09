@@ -15,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
 import pl.patrykdepka.iteventsapi.creator.*;
-import pl.patrykdepka.iteventsapi.event.dto.CreateEventDTO;
-import pl.patrykdepka.iteventsapi.event.dto.EventDTO;
-import pl.patrykdepka.iteventsapi.event.dto.EventEditDTO;
-import pl.patrykdepka.iteventsapi.event.model.Event;
-import pl.patrykdepka.iteventsapi.event.repository.EventRepository;
+import pl.patrykdepka.iteventsapi.event.domain.dto.CreateEventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
+import pl.patrykdepka.iteventsapi.event.domain.Event;
+import pl.patrykdepka.iteventsapi.event.domain.EventRepository;
 import pl.patrykdepka.iteventsapi.eventimage.repository.EventImageRepository;
 import pl.patrykdepka.iteventsapi.profileimage.repository.ProfileImageRepository;
 
@@ -66,7 +66,7 @@ class OrganizerEventControllerIntegrationTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post("/api/v1/organizer/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newEventData));;
+                .content(objectMapper.writeValueAsString(newEventData));
         MvcResult result = mockMvc.perform(request)
                 .andDo(print())
                 .andExpect(status().isCreated())

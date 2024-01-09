@@ -3,7 +3,7 @@ package pl.patrykdepka.iteventsapi.eventimage.service;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.patrykdepka.iteventsapi.event.model.Event;
+import pl.patrykdepka.iteventsapi.event.domain.Event;
 import pl.patrykdepka.iteventsapi.eventimage.exception.DefaultEventImageNotFoundException;
 import pl.patrykdepka.iteventsapi.eventimage.model.EventImage;
 import pl.patrykdepka.iteventsapi.eventimage.repository.EventImageRepository;
