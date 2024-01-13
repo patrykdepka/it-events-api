@@ -120,7 +120,7 @@ public class AppUserService {
     private boolean setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {
         boolean isUpdated = false;
 
-        if (!source.getProfileImage().isEmpty()) {
+        if (source.getProfileImage()!= null && !source.getProfileImage().isEmpty()) {
             imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
             appUserDetailsService.updateAppUserDetails(target);
             isUpdated = true;

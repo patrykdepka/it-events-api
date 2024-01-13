@@ -12,7 +12,7 @@ public class EventEditDTOCreator {
     public static EventEditDTO create(LocalDateTime dateTime) throws IOException {
         return EventEditDTO.builder()
                 .name("Updated test name")
-                .eventImage(EventImageCreator.createNewEventImageFile())
+//                .eventImage(EventImageCreator.createNewEventImageFile())
                 .eventType(EventType.CONFERENCE)
                 .dateTime(dateTime.plusWeeks(1L).toString())
                 .language("Updated test language")
