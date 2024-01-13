@@ -3,7 +3,7 @@ package pl.patrykdepka.iteventsapi.appuser.domain;
 import lombok.Getter;
 import lombok.Setter;
 import pl.patrykdepka.iteventsapi.core.BaseEntity;
-import pl.patrykdepka.iteventsapi.profileimage.model.ProfileImage;
+import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class AppUser extends BaseEntity {
             joinColumns = @JoinColumn(name = "app_user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "profile_image_id", referencedColumnName = "id")
     )
-    private ProfileImage profileImage;
+    private Image profileImage;
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;
@@ -44,7 +44,7 @@ public class AppUser extends BaseEntity {
 
     public static class AppUserBuilder {
         private Long id;
-        private ProfileImage profileImage;
+        private Image profileImage;
         private String firstName;
         private String lastName;
         private LocalDate dateOfBirth;
@@ -61,7 +61,7 @@ public class AppUser extends BaseEntity {
             return this;
         }
 
-        public AppUserBuilder profileImage(ProfileImage profileImage) {
+        public AppUserBuilder profileImage(Image profileImage) {
             this.profileImage = profileImage;
             return this;
         }

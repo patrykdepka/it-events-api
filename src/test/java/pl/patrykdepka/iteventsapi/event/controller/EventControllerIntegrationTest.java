@@ -22,8 +22,7 @@ import pl.patrykdepka.iteventsapi.event.domain.dto.EventCardDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.domain.Event;
 import pl.patrykdepka.iteventsapi.event.domain.EventRepository;
-import pl.patrykdepka.iteventsapi.eventimage.repository.EventImageRepository;
-import pl.patrykdepka.iteventsapi.profileimage.repository.ProfileImageRepository;
+import pl.patrykdepka.iteventsapi.image.domain.ImageRepository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -46,11 +45,9 @@ class EventControllerIntegrationTest {
     @Autowired
     private AppUserRepository appUserRepository;
     @Autowired
-    private ProfileImageRepository profileImageRepository;
+    private ImageRepository imageRepository;
     @Autowired
     private EventRepository eventRepository;
-    @Autowired
-    private EventImageRepository eventImageRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -58,19 +55,19 @@ class EventControllerIntegrationTest {
     @Transactional
     void shouldReturnFirst10UpcomingEvents() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         appUserRepository.save(organizer);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(7L), organizer),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(8L), organizer),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(9L), organizer)
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(7L), organizer),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(8L), organizer),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(9L), organizer)
         );
         eventRepository.saveAll(events);
         // when
@@ -90,14 +87,14 @@ class EventControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldReturnEvent() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         List<AppUser> users = List.of(
                 organizer,
                 user
         );
         appUserRepository.saveAll(users);
-        Event event = EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer);
+        Event event = EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer);
         eventRepository.save(event);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -115,22 +112,22 @@ class EventControllerIntegrationTest {
     @Transactional
     void shouldReturnAllUpcomingEvents() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         appUserRepository.save(organizer);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #11", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #12", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #13", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #11", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #12", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #13", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
         );
         eventRepository.saveAll(events);
         // when
@@ -146,22 +143,22 @@ class EventControllerIntegrationTest {
     @Transactional
     void shouldReturnUpcomingEventsByCity() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         appUserRepository.save(organizer);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #11", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #12", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #13", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #11", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #12", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #13", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
         );
         eventRepository.saveAll(events);
         // when
@@ -177,22 +174,22 @@ class EventControllerIntegrationTest {
     @Transactional
     void shouldReturnAllPastEvents() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         appUserRepository.save(organizer);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #11", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #12", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #13", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #11", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #12", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #13", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
         );
         eventRepository.saveAll(events);
         // when
@@ -208,22 +205,22 @@ class EventControllerIntegrationTest {
     @Transactional
     void shouldReturnPastEventsByCity() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         appUserRepository.save(organizer);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
-                EventCreator.create("Java Dev Talks #11", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
-                EventCreator.create("Java Dev Talks #12", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
-                EventCreator.create("Java Dev Talks #13", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer),
+                EventCreator.create("Java Dev Talks #11", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer),
+                EventCreator.create("Java Dev Talks #12", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer),
+                EventCreator.create("Java Dev Talks #13", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer)
         );
         eventRepository.saveAll(events);
         // when
@@ -240,14 +237,14 @@ class EventControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldAddUserToEventParticipantsList() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         List<AppUser> users = List.of(
                 organizer,
                 user
         );
         appUserRepository.saveAll(users);
-        Event event = EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer);
+        Event event = EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer);
         eventRepository.save(event);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -266,14 +263,14 @@ class EventControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldRemoveUserFromEventParticipantsList() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         List<AppUser> users = List.of(
                 organizer,
                 user
         );
         appUserRepository.saveAll(users);
-        Event event = EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer);
+        Event event = EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer);
         event.addParticipant(user);
         eventRepository.save(event);
         // when
@@ -293,27 +290,27 @@ class EventControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldGetUserEvents() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         List<AppUser> users = List.of(
                 organizer,
                 user
         );
         appUserRepository.saveAll(users);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #11", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #12", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #13", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer, List.of(user))
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #11", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #12", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #13", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer, List.of(user))
         );
         eventRepository.saveAll(events);
         // when
@@ -330,27 +327,27 @@ class EventControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldGetUserEventsByCity() throws Exception {
         // given
-        AppUser organizer = AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser organizer = AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER);
         List<AppUser> users = List.of(
                 organizer,
                 user
         );
         appUserRepository.saveAll(users);
         List<Event> events = List.of(
-                EventCreator.create("Java Dev Talks #1", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #2", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #3", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #4", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #5", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #6", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #7", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #8", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #9", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #10", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #11", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #12", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer, List.of(user)),
-                EventCreator.create("Java Dev Talks #13", eventImageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer, List.of(user))
+                EventCreator.create("Java Dev Talks #1", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(6L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #2", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(5L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #3", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(4L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #4", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(3L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #5", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(2L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #6", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.minusWeeks(1L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #7", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME, organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #8", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(1L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #9", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(2L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #10", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(3L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #11", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(4L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #12", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(5L), organizer, List.of(user)),
+                EventCreator.create("Java Dev Talks #13", imageRepository.save(EventImageCreator.createDefaultEventImage()), DATE_TIME.plusWeeks(6L), organizer, List.of(user))
         );
         eventRepository.saveAll(events);
         // when

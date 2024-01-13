@@ -23,7 +23,7 @@ import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserProfileEditDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserRegistrationDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
-import pl.patrykdepka.iteventsapi.profileimage.repository.ProfileImageRepository;
+import pl.patrykdepka.iteventsapi.image.domain.ImageRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -45,7 +45,7 @@ class AppUserControllerIntegrationTest {
     @Autowired
     private AppUserRepository appUserRepository;
     @Autowired
-    private ProfileImageRepository profileImageRepository;
+    private ImageRepository imageRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -75,7 +75,7 @@ class AppUserControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldReturnUserProfile() throws Exception {
         // given
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
         appUserRepository.save(user);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -86,7 +86,7 @@ class AppUserControllerIntegrationTest {
                 .andReturn();
         // then
         AppUserProfileDTO returnedUserProfile = objectMapper.readValue(result.getResponse().getContentAsString(), AppUserProfileDTO.class);
-        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getFileType());
+        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getType());
         assertThat(returnedUserProfile.getProfileImageData()).isEqualTo(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()));
         assertThat(returnedUserProfile.getFirstName()).isEqualTo(user.getFirstName());
         assertThat(returnedUserProfile.getLastName()).isEqualTo(user.getLastName());
@@ -101,18 +101,18 @@ class AppUserControllerIntegrationTest {
     void shouldReturnAllUsers() throws Exception {
         // given
         List<AppUser> users = List.of(
-                AppUserCreator.create("Admin", "Admin", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
-                AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Patryk", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
-                AppUserCreator.create("Patryk", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Wysocki", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Polak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Zuzanna", "Kowalska", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Michalik", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Daniel", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Maria", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
+                AppUserCreator.create("Admin", "Admin", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
+                AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Patryk", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
+                AppUserCreator.create("Patryk", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Wysocki", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Polak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Zuzanna", "Kowalska", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Michalik", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Daniel", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Maria", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
         );
         appUserRepository.saveAll(users);
         // when
@@ -130,18 +130,18 @@ class AppUserControllerIntegrationTest {
     void shouldReturnEmptyPageOfUsersIfSearchQueryIsEmpty() throws Exception {
         // given
         List<AppUser> users = List.of(
-                AppUserCreator.create("Admin", "Admin", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
-                AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Patryk", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
-                AppUserCreator.create("Patryk", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Wysocki", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Polak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Zuzanna", "Kowalska", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Michalik", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Daniel", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Maria", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
+                AppUserCreator.create("Admin", "Admin", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
+                AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Patryk", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
+                AppUserCreator.create("Patryk", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Wysocki", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Polak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Zuzanna", "Kowalska", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Michalik", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Daniel", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Maria", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
         );
         appUserRepository.saveAll(users);
         // when
@@ -160,18 +160,18 @@ class AppUserControllerIntegrationTest {
     void shouldReturnUsersBySearchIfSearchQueryHasOneWord() throws Exception {
         // given
         List<AppUser> users = List.of(
-                AppUserCreator.create("Admin", "Admin", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
-                AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Patryk", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
-                AppUserCreator.create("Patryk", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Wysocki", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Polak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Zuzanna", "Kowalska", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Michalik", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Daniel", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Maria", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
+                AppUserCreator.create("Admin", "Admin", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
+                AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Patryk", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
+                AppUserCreator.create("Patryk", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Wysocki", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Polak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Zuzanna", "Kowalska", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Michalik", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Daniel", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Maria", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
         );
         appUserRepository.saveAll(users);
         // when
@@ -190,18 +190,18 @@ class AppUserControllerIntegrationTest {
     void shouldReturnUsersBySearchIfSearchQueryHasTwoWord() throws Exception {
         // given
         List<AppUser> users = List.of(
-                AppUserCreator.create("Admin", "Admin", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
-                AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Patryk", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Jan", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
-                AppUserCreator.create("Patryk", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Wysocki", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Polak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Zuzanna", "Kowalska", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Piotr", "Michalik", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Dawid", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Daniel", "Dąbrowski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
-                AppUserCreator.create("Maria", "Nowak", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
+                AppUserCreator.create("Admin", "Admin", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ADMIN),
+                AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Patryk", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Jan", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()), ROLE_ORGANIZER),
+                AppUserCreator.create("Patryk", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Wysocki", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Polak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Zuzanna", "Kowalska", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Piotr", "Michalik", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Dawid", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Daniel", "Dąbrowski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage())),
+                AppUserCreator.create("Maria", "Nowak", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()))
         );
         appUserRepository.saveAll(users);
         // when
@@ -219,7 +219,7 @@ class AppUserControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldReturnUserProfileByUserId() throws Exception {
         // given
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
         appUserRepository.save(user);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -230,7 +230,7 @@ class AppUserControllerIntegrationTest {
                 .andReturn();
         // then
         AppUserProfileDTO returnedUserProfile = objectMapper.readValue(result.getResponse().getContentAsString(), AppUserProfileDTO.class);
-        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getFileType());
+        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getType());
         assertThat(returnedUserProfile.getProfileImageData()).isEqualTo(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()));
         assertThat(returnedUserProfile.getFirstName()).isEqualTo(user.getFirstName());
         assertThat(returnedUserProfile.getLastName()).isEqualTo(user.getLastName());
@@ -244,7 +244,7 @@ class AppUserControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldReturnUserProfileToEdit() throws Exception {
         // given
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
         appUserRepository.save(user);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -268,7 +268,7 @@ class AppUserControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldReturnUpdatedUserProfile() throws Exception {
         // given
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
         appUserRepository.save(user);
         AppUserProfileEditDTO newUserProfileData = AppUserProfileEditDTOCreator.create(
                 user,
@@ -293,7 +293,7 @@ class AppUserControllerIntegrationTest {
     @WithMockUser(username = "jankowalski@example.com")
     void shouldUpdateUserPassword() throws Exception {
         // given
-        AppUser user = AppUserCreator.create("Jan", "Kowalski", profileImageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
+        AppUser user = AppUserCreator.create("Jan", "Kowalski", imageRepository.save(ProfileImageCreator.createDefaultProfileImage()));
         appUserRepository.save(user);
         AppUserPasswordEditDTO newUserPasswordData = new AppUserPasswordEditDTO("tests", "qwerty", "qwerty");
         // when

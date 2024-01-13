@@ -3,6 +3,7 @@ package pl.patrykdepka.iteventsapi.security;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import pl.patrykdepka.iteventsapi.image.domain.ImageType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Getter
 public class AppUserDetails extends User {
-    private final String profileImageType;
+    private final ImageType profileImageType;
     private final String profileImageData;
     private final String firstName;
     private final String lastName;
@@ -32,7 +33,7 @@ public class AppUserDetails extends User {
     }
 
     public static class AppUserDetailsBuilder {
-        private String profileImageType;
+        private ImageType profileImageType;
         private String profileImageData;
         private String firstName;
         private String lastName;
@@ -42,7 +43,7 @@ public class AppUserDetails extends User {
         private boolean accountNonLocked;
         private List<GrantedAuthority> authorities;
 
-        public AppUserDetailsBuilder profileImageType(String profileImageType) {
+        public AppUserDetailsBuilder profileImageType(ImageType profileImageType) {
             this.profileImageType = profileImageType;
             return this;
         }

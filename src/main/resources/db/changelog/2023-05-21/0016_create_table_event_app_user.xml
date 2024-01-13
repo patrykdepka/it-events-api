@@ -4,33 +4,30 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
-    <changeSet id="0015-1" author="Patryk Depka">
-        <createTable tableName="event_event_image">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
+    <changeSet id="0016-1" author="Patryk Depka">
+        <createTable tableName="event_app_user">
             <column name="event_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="event_image_id" type="BIGINT">
+            <column name="app_user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="0015-2" author="Patryk Depka">
-        <addForeignKeyConstraint baseTableName="event_event_image"
+    <changeSet id="0016-2" author="Patryk Depka">
+        <addForeignKeyConstraint baseTableName="event_app_user"
                                  baseColumnNames="event_id"
-                                 constraintName="fk_event_event_image_event"
+                                 constraintName="fk_event_app_user_event"
                                  referencedTableName="event"
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="0015-3" author="Patryk Depka">
-        <addForeignKeyConstraint baseTableName="event_event_image"
-                                 baseColumnNames="event_image_id"
-                                 constraintName="fk_event_event_image_event_image"
-                                 referencedTableName="event_image"
+    <changeSet id="0016-3" author="Patryk Depka">
+        <addForeignKeyConstraint baseTableName="event_app_user"
+                                 baseColumnNames="app_user_id"
+                                 constraintName="fk_event_app_user_app_user"
+                                 referencedTableName="app_user"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

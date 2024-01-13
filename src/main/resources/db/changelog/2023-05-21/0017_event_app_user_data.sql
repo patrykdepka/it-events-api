@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Patryk Depka:0018-1
+--changeset Patryk Depka:0017-1
 INSERT INTO `event_app_user` (`event_id`, `app_user_id`)
 VALUES (1, 2), (1, 3), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12),
        (2, 2), (2, 3), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (2, 10), (2, 11), (2, 12),

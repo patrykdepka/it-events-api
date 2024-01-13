@@ -30,7 +30,7 @@
         <addForeignKeyConstraint baseTableName="app_user_profile_image"
                                  baseColumnNames="profile_image_id"
                                  constraintName="fk_app_user_profile_image_profile_image"
-                                 referencedTableName="profile_image"
+                                 referencedTableName="image"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

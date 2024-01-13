@@ -11,16 +11,15 @@
     <include file="changelog/2023-05-18/0005_create_table_persistent_logins.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2023-05-19/0006_add_app_user_profile_columns.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2023-05-19/0007_app_user_profile_data.sql" relativeToChangelogFile="true" context="dev"/>
-    <include file="changelog/2023-05-19/0008_create_table_profile_image.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-05-19/0008_create_table_image.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2023-05-19/0009_create_table_app_user_profile_image.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2023-05-19/0010_profile_images_data.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="changelog/2023-05-21/0011_add_organizer_role_to_user.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="changelog/2023-05-21/0012_create_table_event.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2023-05-21/0013_events_data.sql" relativeToChangelogFile="true" context="dev"/>
-    <include file="changelog/2023-05-21/0014_create_table_event_image.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/2023-05-21/0015_create_table_event_event_image.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/2023-05-21/0016_event_images_data.sql" relativeToChangelogFile="true" context="dev"/>
-    <include file="changelog/2023-05-21/0017_create_table_event_app_user.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/2023-05-21/0018_event_app_user_data.sql" relativeToChangelogFile="true" context="dev"/>
-    <include file="changelog/2023-05-25/0019_add_admin_user.sql" relativeToChangelogFile="true" context="prod"/>
+    <include file="changelog/2023-05-21/0014_create_table_event_event_image.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-05-21/0015_event_images_data.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="changelog/2023-05-21/0016_create_table_event_app_user.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-05-21/0017_event_app_user_data.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="changelog/2023-05-25/0018_add_admin_user.sql" relativeToChangelogFile="true" context="prod"/>
 </databaseChangeLog>

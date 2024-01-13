@@ -2,7 +2,7 @@ package pl.patrykdepka.iteventsapi.creator;
 
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.appuser.domain.Role;
-import pl.patrykdepka.iteventsapi.profileimage.model.ProfileImage;
+import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -62,7 +62,7 @@ public class AppUserCreator {
                 .build();
     }
 
-    public static AppUser create(String firstName, String lastName, ProfileImage profileImage) {
+    public static AppUser create(String firstName, String lastName, Image profileImage) {
         return AppUser.builder()
                 .profileImage(profileImage)
                 .firstName(firstName)
@@ -94,7 +94,7 @@ public class AppUserCreator {
                 .build();
     }
 
-    public static AppUser create(String firstName, String lastName, ProfileImage profileImage, Role role) {
+    public static AppUser create(String firstName, String lastName, Image profileImage, Role role) {
         return AppUser.builder()
                 .profileImage(profileImage)
                 .firstName(firstName)

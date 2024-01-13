@@ -1,12 +1,13 @@
 package pl.patrykdepka.iteventsapi.event.domain.dto;
 
 import lombok.Value;
+import pl.patrykdepka.iteventsapi.image.domain.ImageType;
 
 @Value
 public class EventDTO {
     Long id;
     String name;
-    String imageType;
+    ImageType imageType;
     String imageData;
     String eventType;
     String date;
@@ -17,7 +18,7 @@ public class EventDTO {
     String location;
     String address;
     Long organizerId;
-    String organizerImageType;
+    ImageType organizerImageType;
     String organizerImageData;
     String organizerName;
     String description;
@@ -26,7 +27,7 @@ public class EventDTO {
     public static class EventDTOBuilder {
         private Long id;
         private String name;
-        private String imageType;
+        private ImageType imageType;
         private String imageData;
         private String eventType;
         private String date;
@@ -37,7 +38,7 @@ public class EventDTO {
         private String location;
         private String address;
         private Long organizerId;
-        private String organizerImageType;
+        private ImageType organizerImageType;
         private String organizerImageData;
         private String organizerName;
         private String description;
@@ -53,7 +54,7 @@ public class EventDTO {
             return this;
         }
 
-        public EventDTOBuilder imageType(String imageType) {
+        public EventDTOBuilder imageType(ImageType imageType) {
             this.imageType = imageType;
             return this;
         }
@@ -108,7 +109,7 @@ public class EventDTO {
             return this;
         }
 
-        public EventDTOBuilder organizerImageType(String organizerImageType) {
+        public EventDTOBuilder organizerImageType(ImageType organizerImageType) {
             this.organizerImageType = organizerImageType;
             return this;
         }

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.core.BaseEntity;
-import pl.patrykdepka.iteventsapi.eventimage.model.EventImage;
+import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class Event extends BaseEntity {
             joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "event_image_id", referencedColumnName = "id")
     )
-    private EventImage eventImage;
+    private Image eventImage;
     @Enumerated(EnumType.STRING)
     private EventType eventType;
     private LocalDateTime dateTime;
@@ -66,7 +66,7 @@ public class Event extends BaseEntity {
     public static class EventBuilder {
         private Long id;
         private String name;
-        private EventImage eventImage;
+        private Image eventImage;
         private EventType eventType;
         private LocalDateTime dateTime;
         private String language;
@@ -88,7 +88,7 @@ public class Event extends BaseEntity {
             return this;
         }
 
-        public EventBuilder eventImage(EventImage eventImage) {
+        public EventBuilder eventImage(Image eventImage) {
             this.eventImage = eventImage;
             return this;
         }

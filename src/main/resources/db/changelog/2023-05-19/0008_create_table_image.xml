@@ -4,16 +4,17 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
-    <changeSet id="0014-1" author="Patryk Depka">
-        <createTable tableName="event_image">
+    <changeSet id="0008-1" author="Patryk Depka">
+        <createTable tableName="image">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="uuid" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
+            <column name="type" type="VARCHAR(50)"/>
             <column name="file_name" type="VARCHAR(50)"/>
-            <column name="file_type" type="VARCHAR(50)"/>
+            <column name="content_type" type="VARCHAR(50)"/>
             <column name="file_data" type="BLOB"/>
         </createTable>
     </changeSet>

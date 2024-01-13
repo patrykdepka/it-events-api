@@ -19,7 +19,7 @@ import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserProfileEditDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserRegistrationDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
-import pl.patrykdepka.iteventsapi.profileimage.service.ProfileImageService;
+import pl.patrykdepka.iteventsapi.image.domain.ImageService;
 import pl.patrykdepka.iteventsapi.security.AppUserDetailsService;
 
 import java.time.format.DateTimeFormatter;
@@ -30,16 +30,17 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_ADMIN;
 import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_USER;
+import static pl.patrykdepka.iteventsapi.image.domain.ImageService.DEFAULT_PROFILE_IMAGE_NAME;
+import static pl.patrykdepka.iteventsapi.image.domain.ImageType.PROFILE_IMAGE;
 
 class AppUserServiceUnitTest {
     static final PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "lastName"));
     private AppUserRepository appUserRepository;
     private PasswordEncoder passwordEncoder;
-    private ProfileImageService profileImageService;
+    private ImageService imageService;
     private AppUserDetailsService appUserDetailsService;
     private AppUserService appUserService;
 
@@ -47,12 +48,12 @@ class AppUserServiceUnitTest {
     void setUp() {
         appUserRepository = Mockito.mock(AppUserRepository.class);
         passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        profileImageService = Mockito.mock(ProfileImageService.class);
+        imageService = Mockito.mock(ImageService.class);
         appUserDetailsService = Mockito.mock(AppUserDetailsService.class);
         appUserService = new AppUserService(
                 appUserRepository,
                 passwordEncoder,
-                profileImageService,
+                imageService,
                 appUserDetailsService
         );
     }
@@ -83,7 +84,7 @@ class AppUserServiceUnitTest {
     void shouldCreateUser() {
         // given
         AppUserRegistrationDTO newUserData = AppUserRegistrationDTOCreator.create();
-        when(profileImageService.createDefaultProfileImage()).thenReturn(ProfileImageCreator.createDefaultProfileImage());
+        when(imageService.createDefaultImage(DEFAULT_PROFILE_IMAGE_NAME, PROFILE_IMAGE)).thenReturn(ProfileImageCreator.createDefaultProfileImage());
         when(passwordEncoder.encode(newUserData.getPassword())).thenReturn("{bcrypt}$2a$10$r7EjB7rf4j4SJ/ZVYUVT6.AIcaz6VNOGqNGr6mWAURZleQS2bSLie");
         when(appUserRepository.save(any(AppUser.class))).thenAnswer(i -> i.getArguments()[0]);
         // when
@@ -115,7 +116,7 @@ class AppUserServiceUnitTest {
         // when
         AppUserProfileDTO returnedUserProfile = appUserService.findUserProfile(user);
         // then
-        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getFileType());
+        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getType());
         assertThat(returnedUserProfile.getProfileImageData()).isEqualTo(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()));
         assertThat(returnedUserProfile.getFirstName()).isEqualTo(user.getFirstName());
         assertThat(returnedUserProfile.getLastName()).isEqualTo(user.getLastName());
@@ -195,7 +196,7 @@ class AppUserServiceUnitTest {
         AppUserProfileDTO returnedUserProfile = appUserService.findUserProfileByUserId(user.getId());
         // then
         assertThat(returnedUserProfile).isNotNull();
-        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getFileType());
+        assertThat(returnedUserProfile.getProfileImageType()).isEqualTo(user.getProfileImage().getType());
         assertThat(returnedUserProfile.getProfileImageData()).isEqualTo(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()));
         assertThat(returnedUserProfile.getFirstName()).isEqualTo(user.getFirstName());
         assertThat(returnedUserProfile.getLastName()).isEqualTo(user.getLastName());

@@ -1,11 +1,12 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
 import lombok.Value;
+import pl.patrykdepka.iteventsapi.image.domain.ImageType;
 
 @Value
 public class AppUserProfileDTO {
     Long id;
-    String profileImageType;
+    ImageType profileImageType;
     String profileImageData;
     String firstName;
     String lastName;
@@ -19,7 +20,7 @@ public class AppUserProfileDTO {
 
     public static class AppUserProfileDTOBuilder {
         private Long id;
-        private String profileImageType;
+        private ImageType profileImageType;
         private String profileImageData;
         private String firstName;
         private String lastName;
@@ -32,7 +33,7 @@ public class AppUserProfileDTO {
             return this;
         }
 
-        public AppUserProfileDTOBuilder profileImageType(String profileImageType) {
+        public AppUserProfileDTOBuilder profileImageType(ImageType profileImageType) {
             this.profileImageType = profileImageType;
             return this;
         }

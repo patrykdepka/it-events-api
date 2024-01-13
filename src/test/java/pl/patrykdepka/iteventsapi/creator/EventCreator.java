@@ -4,7 +4,7 @@ import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
 import pl.patrykdepka.iteventsapi.event.domain.EventType;
 import pl.patrykdepka.iteventsapi.event.domain.Event;
-import pl.patrykdepka.iteventsapi.eventimage.model.EventImage;
+import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class EventCreator {
                 .build();
     }
 
-    public static Event create(String name, EventImage eventImage, LocalDateTime dateTime, AppUser organizer) {
+    public static Event create(String name, Image eventImage, LocalDateTime dateTime, AppUser organizer) {
         return Event.builder()
                 .name(name)
                 .eventImage(eventImage)
@@ -46,7 +46,7 @@ public class EventCreator {
                 .build();
     }
 
-    public static Event create(String name, EventImage eventImage, LocalDateTime dateTime, AppUser organizer, List<AppUser> participants) {
+    public static Event create(String name, Image eventImage, LocalDateTime dateTime, AppUser organizer, List<AppUser> participants) {
         return Event.builder()
                 .name(name)
                 .eventImage(eventImage)

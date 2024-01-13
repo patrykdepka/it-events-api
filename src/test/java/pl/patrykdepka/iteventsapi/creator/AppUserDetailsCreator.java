@@ -10,7 +10,7 @@ public class AppUserDetailsCreator {
 
     public static AppUserDetails create(AppUser user) {
         return new AppUserDetails.AppUserDetailsBuilder()
-                .profileImageType(user.getProfileImage().getFileType())
+                .profileImageType(user.getProfileImage().getType())
                 .profileImageData(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()))
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

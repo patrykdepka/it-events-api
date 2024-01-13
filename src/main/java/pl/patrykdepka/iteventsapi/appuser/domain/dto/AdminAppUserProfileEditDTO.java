@@ -4,6 +4,7 @@ import lombok.Value;
 import org.springframework.web.multipart.MultipartFile;
 import pl.patrykdepka.iteventsapi.core.DateTime;
 import pl.patrykdepka.iteventsapi.core.Image;
+import pl.patrykdepka.iteventsapi.image.domain.ImageType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import javax.validation.constraints.Size;
 @Value
 public class AdminAppUserProfileEditDTO {
     Long id;
-    String profileImageType;
+    ImageType profileImageType;
     String profileImageData;
     @Image(width = 250, height = 250)
     MultipartFile profileImage;
@@ -36,7 +37,7 @@ public class AdminAppUserProfileEditDTO {
 
     public static class AdminAppUserProfileEditDTOBuilder {
         private Long id;
-        private String profileImageType;
+        private ImageType profileImageType;
         private String profileImageData;
         private MultipartFile profileImage;
         private String firstName;
@@ -50,7 +51,7 @@ public class AdminAppUserProfileEditDTO {
             return this;
         }
 
-        public AdminAppUserProfileEditDTOBuilder profileImageType(String profileImageType) {
+        public AdminAppUserProfileEditDTOBuilder profileImageType(ImageType profileImageType) {
             this.profileImageType = profileImageType;
             return this;
         }

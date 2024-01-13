@@ -6,6 +6,7 @@ import pl.patrykdepka.iteventsapi.core.DateTime;
 import pl.patrykdepka.iteventsapi.core.Image;
 import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
 import pl.patrykdepka.iteventsapi.event.domain.EventType;
+import pl.patrykdepka.iteventsapi.image.domain.ImageType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class EventEditDTO {
     @NotBlank(message = "{form.field.name.error.notBlank.message}")
     String name;
-    String imageType;
+    ImageType imageType;
     String imageData;
     @Image(width = 480, height = 270)
     MultipartFile eventImage;
@@ -42,7 +43,7 @@ public class EventEditDTO {
 
     public static class EventEditDTOBuilder {
         private String name;
-        private String imageType;
+        private ImageType imageType;
         private String imageData;
         private MultipartFile eventImage;
         private EventType eventType;
@@ -59,7 +60,7 @@ public class EventEditDTO {
             return this;
         }
 
-        public EventEditDTOBuilder imageType(String imageType) {
+        public EventEditDTOBuilder imageType(ImageType imageType) {
             this.imageType = imageType;
             return this;
         }

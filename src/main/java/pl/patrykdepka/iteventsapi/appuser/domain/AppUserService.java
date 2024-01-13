@@ -13,32 +13,33 @@ import pl.patrykdepka.iteventsapi.appuser.domain.exception.IncorrectCurrentPassw
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AppUserProfileDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AppUserProfileEditDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AppUserTableDTOMapper;
-import pl.patrykdepka.iteventsapi.profileimage.model.ProfileImage;
-import pl.patrykdepka.iteventsapi.profileimage.service.ProfileImageService;
+import pl.patrykdepka.iteventsapi.image.domain.ImageService;
 import pl.patrykdepka.iteventsapi.security.AppUserDetailsService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+
+import static pl.patrykdepka.iteventsapi.image.domain.ImageService.DEFAULT_PROFILE_IMAGE_NAME;
+import static pl.patrykdepka.iteventsapi.image.domain.ImageType.PROFILE_IMAGE;
 
 @Service
 public class AppUserService {
     private final Logger logger = LoggerFactory.getLogger(AppUserService.class);
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ProfileImageService profileImageService;
+    private final ImageService imageService;
     private final AppUserDetailsService appUserDetailsService;
 
     public AppUserService(
             AppUserRepository appUserRepository,
             PasswordEncoder passwordEncoder,
-            ProfileImageService profileImageService,
+            ImageService imageService,
             AppUserDetailsService appUserDetailsService
     ) {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = passwordEncoder;
-        this.profileImageService = profileImageService;
+        this.imageService = imageService;
         this.appUserDetailsService = appUserDetailsService;
     }
 
@@ -49,7 +50,7 @@ public class AppUserService {
     @Transactional
     public AppUserProfileDTO createUser(AppUserRegistrationDTO newUserData) {
         AppUser user = new AppUser();
-        user.setProfileImage(profileImageService.createDefaultProfileImage());
+        user.setProfileImage(imageService.createDefaultImage(DEFAULT_PROFILE_IMAGE_NAME, PROFILE_IMAGE));
         user.setFirstName(newUserData.getFirstName());
         user.setLastName(newUserData.getLastName());
         user.setDateOfBirth(LocalDate.parse(newUserData.getDateOfBirth(), DateTimeFormatter.ISO_LOCAL_DATE));
@@ -119,13 +120,10 @@ public class AppUserService {
     private boolean setUserProfileFields(AppUserProfileEditDTO source, AppUser target) {
         boolean isUpdated = false;
 
-        if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
-            Optional<ProfileImage> profileImage = profileImageService.updateProfileImage(target, source.getProfileImage());
-            if (profileImage.isPresent()) {
-                target.setProfileImage(profileImage.get());
-                appUserDetailsService.updateAppUserDetails(target);
-                isUpdated = true;
-            }
+        if (!source.getProfileImage().isEmpty()) {
+            imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
+            appUserDetailsService.updateAppUserDetails(target);
+            isUpdated = true;
         }
         if (source.getCity() != null && !source.getCity().equals(target.getCity())) {
             target.setCity(source.getCity());

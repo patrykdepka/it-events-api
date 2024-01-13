@@ -32,7 +32,7 @@ public class AppUserDetailsServiceImpl implements AppUserDetailsService {
 
     private UserDetails createAppUserDetails(AppUser user) {
         return new AppUserDetails.AppUserDetailsBuilder()
-                .profileImageType(user.getProfileImage().getFileType())
+                .profileImageType(user.getProfileImage().getType())
                 .profileImageData(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()))
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

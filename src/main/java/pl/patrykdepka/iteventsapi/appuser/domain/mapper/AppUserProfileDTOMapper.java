@@ -14,7 +14,7 @@ public class AppUserProfileDTOMapper {
     public static AppUserProfileDTO mapToAppUserProfileDTO(AppUser user) {
         return AppUserProfileDTO.builder()
                 .id(user.getId())
-                .profileImageType(user.getProfileImage().getFileType())
+                .profileImageType(user.getProfileImage().getType())
                 .profileImageData(Base64.getEncoder().encodeToString(user.getProfileImage().getFileData()))
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

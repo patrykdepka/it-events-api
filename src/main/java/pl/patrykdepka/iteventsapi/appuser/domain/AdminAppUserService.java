@@ -12,8 +12,7 @@ import pl.patrykdepka.iteventsapi.appuser.domain.exception.IncorrectCurrentPassw
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserAccountEditDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserProfileEditDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserTableDTOMapper;
-import pl.patrykdepka.iteventsapi.profileimage.model.ProfileImage;
-import pl.patrykdepka.iteventsapi.profileimage.service.ProfileImageService;
+import pl.patrykdepka.iteventsapi.image.domain.ImageService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -24,16 +23,16 @@ import java.util.Optional;
 public class AdminAppUserService {
     private final Logger logger = LoggerFactory.getLogger(AdminAppUserService.class);
     private final AppUserRepository appUserRepository;
-    private final ProfileImageService profileImageService;
+    private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
 
     public AdminAppUserService(
             AppUserRepository appUserRepository,
-            ProfileImageService profileImageService,
+            ImageService imageService,
             PasswordEncoder passwordEncoder
     ) {
         this.appUserRepository = appUserRepository;
-        this.profileImageService = profileImageService;
+        this.imageService = imageService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -148,11 +147,12 @@ public class AdminAppUserService {
         boolean isUpdated = false;
 
         if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
-            Optional<ProfileImage> profileImage = profileImageService.updateProfileImage(target, source.getProfileImage());
-            if (profileImage.isPresent()) {
-                target.setProfileImage(profileImage.get());
-                isUpdated = true;
-            }
+            imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
+//            Optional<Image> profileImage = imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
+//            if (profileImage.isPresent()) {
+//                target.setProfileImage(profileImage.get());
+//                isUpdated = true;
+//            }
         }
         if (source.getFirstName() != null && !source.getFirstName().equals(target.getFirstName())) {
             target.setFirstName(source.getFirstName());

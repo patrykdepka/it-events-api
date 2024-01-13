@@ -17,7 +17,7 @@ import pl.patrykdepka.iteventsapi.appuser.domain.exception.AppUserNotFoundExcept
 import pl.patrykdepka.iteventsapi.appuser.domain.exception.IncorrectCurrentPasswordException;
 import pl.patrykdepka.iteventsapi.creator.AdminAppUserProfileEditDTOCreator;
 import pl.patrykdepka.iteventsapi.creator.AppUserCreator;
-import pl.patrykdepka.iteventsapi.profileimage.service.ProfileImageService;
+import pl.patrykdepka.iteventsapi.image.domain.ImageService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -33,18 +33,18 @@ import static pl.patrykdepka.iteventsapi.appuser.domain.Role.*;
 class AdminAppUserServiceUnitTest {
     static final PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "lastName"));
     private AppUserRepository appUserRepository;
-    private ProfileImageService profileImageService;
+    private ImageService imageService;
     private PasswordEncoder passwordEncoder;
     private AdminAppUserService adminAppUserService;
 
     @BeforeEach
     void setUp() {
         appUserRepository = Mockito.mock(AppUserRepository.class);
-        profileImageService = Mockito.mock(ProfileImageService.class);
+        imageService = Mockito.mock(ImageService.class);
         passwordEncoder = Mockito.mock(PasswordEncoder.class);
         adminAppUserService = new AdminAppUserService(
                 appUserRepository,
-                profileImageService,
+                imageService,
                 passwordEncoder
         );
     }
