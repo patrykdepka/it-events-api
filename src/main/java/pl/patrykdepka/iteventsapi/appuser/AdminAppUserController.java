@@ -20,20 +20,11 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 class AdminAppUserController {
     private final AdminAppUserService adminAppUserService;
     private final CurrentUserFacade currentUserFacade;
     private final MessageSource messageSource;
-
-    AdminAppUserController(
-            AdminAppUserService adminAppUserService,
-            CurrentUserFacade currentUserFacade,
-            MessageSource messageSource
-    ) {
-        this.adminAppUserService = adminAppUserService;
-        this.currentUserFacade = currentUserFacade;
-        this.messageSource = messageSource;
-    }
 
     @GetMapping("/admin/users")
     Page<AdminAppUserTableDTO> getAllUsers(

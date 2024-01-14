@@ -1,5 +1,6 @@
 package pl.patrykdepka.iteventsapi.appuser.domain;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -20,21 +21,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AdminAppUserService {
     private final Logger logger = LoggerFactory.getLogger(AdminAppUserService.class);
     private final AppUserRepository appUserRepository;
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
-
-    public AdminAppUserService(
-            AppUserRepository appUserRepository,
-            ImageService imageService,
-            PasswordEncoder passwordEncoder
-    ) {
-        this.appUserRepository = appUserRepository;
-        this.imageService = imageService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public Page<AdminAppUserTableDTO> findAllUsers(Pageable page) {
         return AdminAppUserTableDTOMapper.mapToAdminAppUserTableDTOs(appUserRepository.findAll(page));

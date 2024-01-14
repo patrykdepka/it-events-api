@@ -1,5 +1,6 @@
 package pl.patrykdepka.iteventsapi.event;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,14 +18,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 class EventController {
     private final EventService eventService;
     private final CurrentUserFacade currentUserFacade;
-
-    EventController(EventService eventService, CurrentUserFacade currentUserFacade) {
-        this.eventService = eventService;
-        this.currentUserFacade = currentUserFacade;
-    }
 
     @GetMapping("/home")
     List<EventCardDTO> showMainPage() {

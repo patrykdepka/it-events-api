@@ -1,5 +1,6 @@
 package pl.patrykdepka.iteventsapi.event;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,14 +18,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 class OrganizerEventController {
     private final OrganizerEventService organizerEventService;
     private final CurrentUserFacade currentUserFacade;
-
-    OrganizerEventController(OrganizerEventService organizerEventService, CurrentUserFacade currentUserFacade) {
-        this.organizerEventService = organizerEventService;
-        this.currentUserFacade = currentUserFacade;
-    }
 
     @PostMapping("/organizer/events")
     ResponseEntity<EventDTO> createEvent(@Valid @RequestBody CreateEventDTO newEventData) {

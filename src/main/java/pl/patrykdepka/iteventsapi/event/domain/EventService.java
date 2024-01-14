@@ -1,6 +1,7 @@
 package pl.patrykdepka.iteventsapi.event.domain;
 
 import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -21,13 +22,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class EventService {
     private final Logger logger = LoggerFactory.getLogger(EventService.class);
     private final EventRepository eventRepository;
-
-    public EventService(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
 
     public List<EventCardDTO> findFirst10UpcomingEvents() {
         return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findFirst10EventsByOrderByDateTimeAsc());

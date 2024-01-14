@@ -1,5 +1,6 @@
 package pl.patrykdepka.iteventsapi.appuser;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,14 +17,10 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 class AppUserController {
     private final AppUserService appUserService;
     private final CurrentUserFacade currentUserFacade;
-
-    AppUserController(AppUserService appUserService, CurrentUserFacade currentUserFacade) {
-        this.appUserService = appUserService;
-        this.currentUserFacade = currentUserFacade;
-    }
 
     @PostMapping("/register")
     ResponseEntity<AppUserProfileDTO> register(@Valid @RequestBody AppUserRegistrationDTO newUserData) {

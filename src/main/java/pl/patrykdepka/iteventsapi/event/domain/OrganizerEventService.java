@@ -1,6 +1,7 @@
 package pl.patrykdepka.iteventsapi.event.domain;
 
 import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -27,15 +28,11 @@ import static pl.patrykdepka.iteventsapi.image.domain.ImageService.DEFAULT_EVENT
 import static pl.patrykdepka.iteventsapi.image.domain.ImageType.EVENT_IMAGE;
 
 @Service
+@RequiredArgsConstructor
 public class OrganizerEventService {
     private final Logger logger = LoggerFactory.getLogger(OrganizerEventService.class);
     private final EventRepository eventRepository;
     private final ImageService imageService;
-
-    public OrganizerEventService(EventRepository eventRepository, ImageService imageService) {
-        this.eventRepository = eventRepository;
-        this.imageService = imageService;
-    }
 
     public EventDTO createEvent(AppUser currentUser, CreateEventDTO newEventData) {
         Event event = new Event();
