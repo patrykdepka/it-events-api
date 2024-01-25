@@ -135,7 +135,7 @@ public class OrganizerEventService {
         if (source.getName() != null && !source.getName().equals(target.getName())) {
             target.setName(source.getName());
         }
-        if (source.getEventImage() != null && !source.getEventImage().isEmpty()) {
+        if (source.getEventImage() != null) {
             imageService.updateImage(target.getEventImage().getId(), source.getEventImage());
         }
         if (source.getDateTime() != null && !source.getDateTime().equals(target.getDateTime().toString())) {

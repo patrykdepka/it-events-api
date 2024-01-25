@@ -10,7 +10,6 @@ public class AdminAppUserAccountEditDTOMapper {
 
     public static AdminAppUserAccountEditDTO mapToAdminAppUserAccountEditDTO(AppUser user) {
         return AdminAppUserAccountEditDTO.builder()
-                .id(user.getId())
                 .enabled(user.isEnabled())
                 .accountNonLocked(user.isAccountNonLocked())
                 .roles(user.getRoles())

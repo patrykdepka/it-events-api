@@ -167,8 +167,8 @@ class OrganizerEventServiceUnitTest {
         assertThat(returnedEventToEdit).isNotNull();
         assertThat(returnedEventToEdit.getName()).isEqualTo(event.getName());
         assertThat(returnedEventToEdit).isNotNull();
-        assertThat(returnedEventToEdit.getImageType()).isEqualTo(event.getEventImage().getType());
-        assertThat(returnedEventToEdit.getImageData()).isEqualTo(Base64.getEncoder().encodeToString(event.getEventImage().getFileData()));
+        String eventImageDate = "data:null"  + ";base64," +  Base64.getEncoder().encodeToString(event.getEventImage().getFileData());
+        assertThat(returnedEventToEdit.getEventImageData()).isEqualTo(eventImageDate);
         assertThat(returnedEventToEdit.getEventType()).isEqualTo(event.getEventType());
         assertThat(returnedEventToEdit.getDateTime()).isEqualTo(event.getDateTime().toString());
         assertThat(returnedEventToEdit.getLanguage()).isEqualTo(event.getLanguage());

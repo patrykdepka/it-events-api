@@ -25,6 +25,7 @@ import pl.patrykdepka.iteventsapi.creator.ProfileImageCreator;
 import pl.patrykdepka.iteventsapi.image.domain.ImageRepository;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -177,14 +178,13 @@ class AdminAppUserControllerIntegrationTest {
         appUserRepository.save(user);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get("/api/v1/admin/users/" + user.getId() + "/settings/account");
+                .get("/api/v1/admin/users/" + user.getId() + "/account");
         MvcResult result = mockMvc.perform(request)
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
         // then
         AdminAppUserAccountEditDTO returnedUserAccountToEdit = objectMapper.readValue(result.getResponse().getContentAsString(), AdminAppUserAccountEditDTO.class);
-        assertThat(returnedUserAccountToEdit.getId()).isEqualTo(user.getId());
         assertThat(returnedUserAccountToEdit.isEnabled()).isEqualTo(user.isEnabled());
         assertThat(returnedUserAccountToEdit.isAccountNonLocked()).isEqualTo(user.isAccountNonLocked());
         assertThat(returnedUserAccountToEdit.getRoles()).isEqualTo(user.getRoles());
@@ -209,7 +209,7 @@ class AdminAppUserControllerIntegrationTest {
                 .build();
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .patch("/api/v1/admin/users/" + user.getId() + "/settings/account")
+                .patch("/api/v1/admin/users/" + user.getId() + "/account")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUserAccountData));
         mockMvc.perform(request)
@@ -226,14 +226,13 @@ class AdminAppUserControllerIntegrationTest {
         appUserRepository.save(user);
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get("/api/v1/admin/users/" + user.getId() + "/settings/profile");
+                .get("/api/v1/admin/users/" + user.getId() + "/profile");
         MvcResult result = mockMvc.perform(request)
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
         // then
         AdminAppUserProfileEditDTO returnedUserProfileToEdit = objectMapper.readValue(result.getResponse().getContentAsString(), AdminAppUserProfileEditDTO.class);
-        assertThat(returnedUserProfileToEdit.getId()).isEqualTo(user.getId());
         assertThat(returnedUserProfileToEdit.getProfileImage()).isNull();
         assertThat(returnedUserProfileToEdit.getFirstName()).isEqualTo(user.getFirstName());
         assertThat(returnedUserProfileToEdit.getLastName()).isEqualTo(user.getLastName());
@@ -257,7 +256,7 @@ class AdminAppUserControllerIntegrationTest {
         AdminAppUserProfileEditDTO newUserProfileData = AdminAppUserProfileEditDTOCreator.create();
         // when
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .patch("/api/v1/admin/users/" + user.getId() + "/settings/profile")
+                .patch("/api/v1/admin/users/" + user.getId() + "/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUserProfileData));
         mockMvc.perform(request)
@@ -265,6 +264,9 @@ class AdminAppUserControllerIntegrationTest {
                 .andExpect(status().isNoContent());
         // then
         AppUser userAfterUpdate = appUserRepository.findById(user.getId()).get();
+        String updatedProfileImage = "data:" + userAfterUpdate.getProfileImage().getContentType() + ";base64," + Base64.getEncoder().encodeToString(userAfterUpdate.getProfileImage().getFileData());
+        String newProfileImage = "data:" + newUserProfileData.getProfileImage().getContentType() + ";base64," + newUserProfileData.getProfileImage().getContent();
+        assertThat(updatedProfileImage).isEqualTo(newProfileImage);
         assertThat(userAfterUpdate.getFirstName()).isEqualTo(newUserProfileData.getFirstName());
         assertThat(userAfterUpdate.getLastName()).isEqualTo(newUserProfileData.getLastName());
         assertThat(userAfterUpdate.getDateOfBirth()).isEqualTo(newUserProfileData.getDateOfBirth());

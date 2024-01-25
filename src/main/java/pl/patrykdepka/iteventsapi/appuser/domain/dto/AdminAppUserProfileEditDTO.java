@@ -1,10 +1,9 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
 import lombok.Value;
-import org.springframework.web.multipart.MultipartFile;
 import pl.patrykdepka.iteventsapi.core.DateTime;
 import pl.patrykdepka.iteventsapi.core.Image;
-import pl.patrykdepka.iteventsapi.image.domain.ImageType;
+import pl.patrykdepka.iteventsapi.image.domain.dto.ImageDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,11 +11,9 @@ import javax.validation.constraints.Size;
 
 @Value
 public class AdminAppUserProfileEditDTO {
-    Long id;
-    ImageType profileImageType;
     String profileImageData;
     @Image(width = 250, height = 250)
-    MultipartFile profileImage;
+    ImageDTO profileImage;
     @NotBlank(message = "{form.field.firstName.error.notBlank.message}")
     @Size(min = 2, max = 50, message = "{form.field.firstName.error.size.message}")
     String firstName;
@@ -36,32 +33,20 @@ public class AdminAppUserProfileEditDTO {
     }
 
     public static class AdminAppUserProfileEditDTOBuilder {
-        private Long id;
-        private ImageType profileImageType;
         private String profileImageData;
-        private MultipartFile profileImage;
+        private ImageDTO profileImage;
         private String firstName;
         private String lastName;
         private String dateOfBirth;
         private String city;
         private String bio;
 
-        public AdminAppUserProfileEditDTOBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public AdminAppUserProfileEditDTOBuilder profileImageType(ImageType profileImageType) {
-            this.profileImageType = profileImageType;
-            return this;
-        }
-
         public AdminAppUserProfileEditDTOBuilder profileImageData(String profileImageData) {
             this.profileImageData = profileImageData;
             return this;
         }
 
-        public AdminAppUserProfileEditDTOBuilder profileImage(MultipartFile profileImage) {
+        public AdminAppUserProfileEditDTOBuilder profileImage(ImageDTO profileImage) {
             this.profileImage = profileImage;
             return this;
         }
@@ -93,8 +78,6 @@ public class AdminAppUserProfileEditDTO {
 
         public AdminAppUserProfileEditDTO build() {
             return new AdminAppUserProfileEditDTO(
-                    id,
-                    profileImageType,
                     profileImageData,
                     profileImage,
                     firstName,

@@ -53,25 +53,25 @@ class AdminAppUserController {
         return adminAppUserService.findUsersBySearch(searchQuery, pageRequest);
     }
 
-    @GetMapping("/admin/users/{id}/settings/account")
-    AdminAppUserAccountEditDTO showUserAccountEditForm(@PathVariable Long id) {
+    @GetMapping("/admin/users/{id}/account")
+    AdminAppUserAccountEditDTO getUserAccountData(@PathVariable Long id) {
         return adminAppUserService.findUserAccountToEdit(id);
     }
 
-    @PatchMapping("/admin/users/{id}/settings/account")
+    @PatchMapping("/admin/users/{id}/account")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateUserAccount(@PathVariable Long id, @Valid @RequestBody AdminAppUserAccountEditDTO userAccount) {
+    void updateUserAccountData(@PathVariable Long id, @Valid @RequestBody AdminAppUserAccountEditDTO userAccount) {
         adminAppUserService.updateUserAccount(currentUserFacade.getCurrentUser(), id, userAccount);
     }
 
-    @GetMapping("/admin/users/{id}/settings/profile")
-    AdminAppUserProfileEditDTO showUserProfileEditForm(@PathVariable Long id) {
+    @GetMapping("/admin/users/{id}/profile")
+    AdminAppUserProfileEditDTO getUserProfileData(@PathVariable Long id) {
         return adminAppUserService.findUserProfileToEdit(id);
     }
 
-    @PatchMapping("/admin/users/{id}/settings/profile")
+    @PatchMapping("/admin/users/{id}/profile")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateUserProfile(@PathVariable Long id, @Valid @RequestBody AdminAppUserProfileEditDTO userProfile) {
+    void updateUserProfileData(@PathVariable Long id, @Valid @RequestBody AdminAppUserProfileEditDTO userProfile) {
         adminAppUserService.updateUserProfile(currentUserFacade.getCurrentUser(), id, userProfile);
     }
 

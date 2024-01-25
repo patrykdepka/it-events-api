@@ -138,13 +138,8 @@ public class AdminAppUserService {
     private boolean setUserProfileFields(AdminAppUserProfileEditDTO source, AppUser target) {
         boolean isUpdated = false;
 
-        if (source.getProfileImage() != null && !source.getProfileImage().isEmpty()) {
+        if (source.getProfileImage() != null) {
             imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
-//            Optional<Image> profileImage = imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
-//            if (profileImage.isPresent()) {
-//                target.setProfileImage(profileImage.get());
-//                isUpdated = true;
-//            }
         }
         if (source.getFirstName() != null && !source.getFirstName().equals(target.getFirstName())) {
             target.setFirstName(source.getFirstName());

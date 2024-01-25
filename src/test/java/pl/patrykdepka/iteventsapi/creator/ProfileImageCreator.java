@@ -5,9 +5,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pl.patrykdepka.iteventsapi.image.domain.Image;
+import pl.patrykdepka.iteventsapi.image.domain.dto.ImageDTO;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 import static pl.patrykdepka.iteventsapi.image.domain.ImageType.PROFILE_IMAGE;
 
@@ -54,6 +56,22 @@ public class ProfileImageCreator {
             return image;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static ImageDTO createNewProfileImageDTO() {
+        try {
+            ClassPathResource resource = new ClassPathResource("static/images/custom_profile_image.png");
+            MockMultipartFile multipartFile = new MockMultipartFile(
+                    resource.getFilename(), null, "image/png", resource.getInputStream()
+            );
+            return new ImageDTO(
+                    multipartFile.getOriginalFilename(),
+                    Base64.getEncoder().encodeToString(multipartFile.getBytes()),
+                    multipartFile.getContentType()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException();
         }
     }
 }

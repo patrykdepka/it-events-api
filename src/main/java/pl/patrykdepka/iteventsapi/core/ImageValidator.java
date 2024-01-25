@@ -1,18 +1,20 @@
 package pl.patrykdepka.iteventsapi.core;
 
-import org.springframework.web.multipart.MultipartFile;
+import pl.patrykdepka.iteventsapi.image.domain.dto.ImageDTO;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
-public class ImageValidator implements ConstraintValidator<Image, MultipartFile> {
+public class ImageValidator implements ConstraintValidator<Image, ImageDTO> {
+    private static final String[] allowedFileTypes = new String[] { "image/jpeg", "image/jpg", "image/png" };
     private int width;
     private int height;
 
@@ -23,39 +25,33 @@ public class ImageValidator implements ConstraintValidator<Image, MultipartFile>
     }
 
     @Override
-    public boolean isValid(MultipartFile image, ConstraintValidatorContext context) {
+    public boolean isValid(ImageDTO imageData, ConstraintValidatorContext context) {
         List<String> errorMessages = new ArrayList<>();
-        String message;
 
-        if (image != null && !image.isEmpty()) {
-            String[] allowedFileTypes = new String[] { "image/jpeg", "image/jpg", "image/png" };
-            String fileType = image.getContentType();
-            boolean isFileTypeValid = Arrays.stream(allowedFileTypes).anyMatch(fileType::equals);
+        if (imageData != null) {
+            String contentType = imageData.getContentType();
+            boolean isContentTypeValid = Arrays.asList(allowedFileTypes).contains(contentType);
 
-            if (!isFileTypeValid) {
-                message = "{form.field.image.error.invalidFileType.message}";
-                errorMessages.add(message);
-            }
-
-            if (isFileTypeValid) {
+            if (!isContentTypeValid) {
+                errorMessages.add("{form.field.image.error.invalidFileType.message}");
+            } else {
                 try {
-                    ImageInputStream imageInputStream = ImageIO.createImageInputStream(image.getInputStream());
-                    BufferedImage bufferedImage = ImageIO.read(imageInputStream);
-                    if (bufferedImage.getWidth() > width || bufferedImage.getHeight() > height) {
-                        message = "{form.field.image.error.invalidImageSize.message}";
-                        errorMessages.add(message);
+                    byte[] bytes = Base64.getDecoder().decode(imageData.getContent());
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+
+                    if (image.getHeight() > height || image.getWidth() > width) {
+                        errorMessages.add("{form.field.image.error.invalidImageSize.message}");
+                    }
+
+                    if (bytes.length > 2097152) {
+                        errorMessages.add("{form.field.image.error.invalidFileSize.message}");
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
 
-            if (image.getSize() > 2097152) {
-                message = "{form.field.image.error.invalidFileSize.message}";
-                errorMessages.add(message);
-            }
-
-            if (errorMessages.size() > 0) {
+            if (!errorMessages.isEmpty()) {
                 context.disableDefaultConstraintViolation();
                 for (String errorMessage : errorMessages) {
                     context.buildConstraintViolationWithTemplate(errorMessage).addConstraintViolation();

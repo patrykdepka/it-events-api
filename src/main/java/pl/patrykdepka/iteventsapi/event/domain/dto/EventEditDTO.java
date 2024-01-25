@@ -1,12 +1,11 @@
 package pl.patrykdepka.iteventsapi.event.domain.dto;
 
-import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.Value;
 import pl.patrykdepka.iteventsapi.core.DateTime;
 import pl.patrykdepka.iteventsapi.core.Image;
 import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
 import pl.patrykdepka.iteventsapi.event.domain.EventType;
-import pl.patrykdepka.iteventsapi.image.domain.ImageType;
+import pl.patrykdepka.iteventsapi.image.domain.dto.ImageDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,10 +14,9 @@ import javax.validation.constraints.NotNull;
 public class EventEditDTO {
     @NotBlank(message = "{form.field.name.error.notBlank.message}")
     String name;
-    ImageType imageType;
-    String imageData;
+    String eventImageData;
     @Image(width = 480, height = 270)
-    MultipartFile eventImage;
+    ImageDTO eventImage;
     @NotNull(message = "{form.field.eventType.error.notNull.message}")
     EventType eventType;
     @NotNull(message = "{form.field.dateOfBirth.error.notNull.message}")
@@ -43,9 +41,8 @@ public class EventEditDTO {
 
     public static class EventEditDTOBuilder {
         private String name;
-        private ImageType imageType;
-        private String imageData;
-        private MultipartFile eventImage;
+        private String eventImageData;
+        private ImageDTO eventImage;
         private EventType eventType;
         private String dateTime;
         private String language;
@@ -60,17 +57,12 @@ public class EventEditDTO {
             return this;
         }
 
-        public EventEditDTOBuilder imageType(ImageType imageType) {
-            this.imageType = imageType;
+        public EventEditDTOBuilder eventImageData(String eventImageData) {
+            this.eventImageData = eventImageData;
             return this;
         }
 
-        public EventEditDTOBuilder imageData(String imageData) {
-            this.imageData = imageData;
-            return this;
-        }
-
-        public EventEditDTOBuilder eventImage(MultipartFile eventImage) {
+        public EventEditDTOBuilder eventImage(ImageDTO eventImage) {
             this.eventImage = eventImage;
             return this;
         }
@@ -118,8 +110,7 @@ public class EventEditDTO {
         public EventEditDTO build() {
             return new EventEditDTO(
                     name,
-                    imageType,
-                    imageData,
+                    eventImageData,
                     eventImage,
                     eventType,
                     dateTime,

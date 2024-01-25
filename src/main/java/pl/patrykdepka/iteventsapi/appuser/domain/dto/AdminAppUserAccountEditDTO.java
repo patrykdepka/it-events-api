@@ -9,7 +9,6 @@ import java.util.List;
 
 @Value
 public class AdminAppUserAccountEditDTO {
-    Long id;
     @NotNull(message = "{form.field.someField.error.notNull.message}")
     boolean enabled;
     @NotNull(message = "{form.field.someField.error.notNull.message}")
@@ -23,15 +22,9 @@ public class AdminAppUserAccountEditDTO {
     }
 
     public static class AdminAppUserAccountEditDTOBuilder {
-        private Long id;
         private boolean enabled;
         private boolean accountNonLocked;
         private List<Role> roles;
-
-        public AdminAppUserAccountEditDTOBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
 
         public AdminAppUserAccountEditDTOBuilder enabled(boolean enabled) {
             this.enabled = enabled;
@@ -50,7 +43,6 @@ public class AdminAppUserAccountEditDTO {
 
         public AdminAppUserAccountEditDTO build() {
             return new AdminAppUserAccountEditDTO(
-                    id,
                     enabled,
                     accountNonLocked,
                     roles

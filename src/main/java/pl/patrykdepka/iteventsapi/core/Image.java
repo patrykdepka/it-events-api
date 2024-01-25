@@ -16,7 +16,7 @@ public @interface Image {
 
     int height() default 100;
 
-    String message() default "Invalid profile image";
+    String message() default "Invalid image";
 
     Class<?>[] groups() default {};
 

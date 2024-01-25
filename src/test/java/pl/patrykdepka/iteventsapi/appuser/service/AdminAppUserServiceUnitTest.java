@@ -133,7 +133,6 @@ class AdminAppUserServiceUnitTest {
         AppUser user = AppUserCreator.create(2L, "Jan", "Kowalski");
         when(appUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
         AdminAppUserAccountEditDTO newUserAccountData = AdminAppUserAccountEditDTO.builder()
-                .id(user.getId())
                 .enabled(false)
                 .accountNonLocked(false)
                 .roles(List.of(ROLE_ORGANIZER))

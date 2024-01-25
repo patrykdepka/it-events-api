@@ -1,15 +1,15 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
 import lombok.Value;
-import org.springframework.web.multipart.MultipartFile;
 import pl.patrykdepka.iteventsapi.core.Image;
+import pl.patrykdepka.iteventsapi.image.domain.dto.ImageDTO;
 
 import javax.validation.constraints.Size;
 
 @Value
 public class AppUserProfileEditDTO {
     @Image(width = 250, height = 250)
-    MultipartFile profileImage;
+    ImageDTO profileImage;
     String firstName;
     String lastName;
     String dateOfBirth;
@@ -23,14 +23,14 @@ public class AppUserProfileEditDTO {
     }
 
     public static class AppUserProfileEditDTOBuilder {
-        private MultipartFile profileImage;
+        private ImageDTO profileImage;
         private String firstName;
         private String lastName;
         private String dateOfBirth;
         private String city;
         private String bio;
 
-        public AppUserProfileEditDTOBuilder profileImage(MultipartFile profileImage) {
+        public AppUserProfileEditDTOBuilder profileImage(ImageDTO profileImage) {
             this.profileImage = profileImage;
             return this;
         }

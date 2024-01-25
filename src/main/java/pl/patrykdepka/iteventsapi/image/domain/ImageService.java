@@ -3,12 +3,13 @@ package pl.patrykdepka.iteventsapi.image.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import pl.patrykdepka.iteventsapi.image.domain.dto.ImageDTO;
 import pl.patrykdepka.iteventsapi.image.domain.exception.DefaultImageNotFoundException;
 import pl.patrykdepka.iteventsapi.image.domain.exception.ImageNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -33,18 +34,16 @@ public class ImageService {
         }
     }
 
-    public void updateImage(Long id, MultipartFile file) {
+    public void updateImage(Long id, ImageDTO file) {
         Optional<Image> userProfileImageOpt = imageRepository.findById(id);
 
-        try {
-            if (userProfileImageOpt.isPresent()) {
-                Image image = userProfileImageOpt.get();
-                image.setFileName(file.getOriginalFilename());
-                image.setContentType(file.getContentType());
-                image.setFileData(file.getBytes());
-            }
-        } catch (IOException e) {
+        if (!userProfileImageOpt.isPresent()) {
             throw new ImageNotFoundException("File not found");
         }
+
+        Image image = userProfileImageOpt.get();
+        image.setFileName(file.getFilename());
+        image.setFileData(Base64.getDecoder().decode(file.getContent()));
+        image.setContentType(file.getContentType());
     }
 }
