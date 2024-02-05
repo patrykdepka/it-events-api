@@ -12,4 +12,7 @@ VALUES (1, 'ROLE_ADMIN'),
        (9, 'ROLE_USER'),
        (10, 'ROLE_USER'),
        (11, 'ROLE_USER'),
-       (12, 'ROLE_USER');
+       (12, 'ROLE_USER'),
+       (13, 'ROLE_USER'),
+       (14, 'ROLE_USER'),
+       (15, 'ROLE_USER');

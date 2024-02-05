@@ -1,17 +1,31 @@
 package pl.patrykdepka.iteventsapi.appuser.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.patrykdepka.iteventsapi.core.BaseEntity;
 import pl.patrykdepka.iteventsapi.image.domain.Image;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class AppUser extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +58,7 @@ public class AppUser extends BaseEntity {
 
     public static class AppUserBuilder {
         private Long id;
+        private String uuid;
         private Image profileImage;
         private String firstName;
         private String lastName;
@@ -58,6 +73,11 @@ public class AppUser extends BaseEntity {
 
         public AppUserBuilder id(Long id) {
             this.id = id;
+            return this;
+        }
+
+        public AppUserBuilder uuid(String uuid) {
+            this.uuid = uuid;
             return this;
         }
 
@@ -119,6 +139,7 @@ public class AppUser extends BaseEntity {
         public AppUser build() {
             AppUser user = new AppUser();
             user.setId(id);
+            user.setUuid(uuid);
             user.setProfileImage(profileImage);
             user.setFirstName(firstName);
             user.setLastName(lastName);

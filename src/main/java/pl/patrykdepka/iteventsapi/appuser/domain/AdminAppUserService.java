@@ -3,22 +3,26 @@ package pl.patrykdepka.iteventsapi.appuser.domain;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.patrykdepka.iteventsapi.appuser.domain.dto.*;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserAccountEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserPasswordEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserTableDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminDeleteAppUserDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserProfileEditDTO;
 import pl.patrykdepka.iteventsapi.appuser.domain.exception.AppUserNotFoundException;
 import pl.patrykdepka.iteventsapi.appuser.domain.exception.IncorrectCurrentPasswordException;
-import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserAccountEditDTOMapper;
-import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserProfileEditDTOMapper;
+import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserAccountDTOMapper;
 import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AdminAppUserTableDTOMapper;
+import pl.patrykdepka.iteventsapi.appuser.domain.mapper.AppUserProfileEditDTOMapper;
 import pl.patrykdepka.iteventsapi.image.domain.ImageService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 @Service
 @RequiredArgsConstructor
@@ -48,121 +52,80 @@ public class AdminAppUserService {
         return Page.empty();
     }
 
-    public AdminAppUserAccountEditDTO findUserAccountToEdit(Long id) {
+    public AdminAppUserAccountEditDTO findUserAccountData(Long id) {
         return appUserRepository.findById(id)
-                .map(AdminAppUserAccountEditDTOMapper::mapToAdminAppUserAccountEditDTO)
-                .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
+                .map(AdminAppUserAccountDTOMapper::mapToAdminAppUserAccountDTO)
+                .orElseThrow(() -> new AppUserNotFoundException("User [ID: " + id + "] not found"));
     }
 
-    @Transactional
-    public AdminAppUserAccountEditDTO updateUserAccount(AppUser currentUser, Long id, AdminAppUserAccountEditDTO userAccount) {
-        Optional<AppUser> userOpt = appUserRepository.findById(id);
-        if (userOpt.isPresent()) {
-            AppUser user = userOpt.get();
-            if (setUserAccountFields(userAccount, user)) {
-                logger.info("User [ID: " + user.getId() + "] account updated by user [ID: " + currentUser.getId() + "]");
-            }
-
-            return AdminAppUserAccountEditDTOMapper.mapToAdminAppUserAccountEditDTO(user);
+    public AdminAppUserAccountEditDTO updateUserAccountData(AppUser currentUser, Long id, AdminAppUserAccountEditDTO newAccountData) {
+        AppUser user = appUserRepository.findById(id)
+                .orElseThrow(() -> new AppUserNotFoundException("User [ID: " + id + "] not found"));
+        if (newAccountData.isEnabled() != user.isEnabled()) {
+            user.setEnabled(newAccountData.isEnabled());
         }
-
-        throw new AppUserNotFoundException("User with ID " + id + " not found");
+        if (newAccountData.isAccountNonLocked() != user.isAccountNonLocked()) {
+            user.setAccountNonLocked(newAccountData.isAccountNonLocked());
+        }
+        if (!newAccountData.getRoles().equals(user.getRoles())) {
+            user.setRoles(newAccountData.getRoles());
+        }
+        logger.info("User [ID: {}] account was updated by user [ID: {}]", user.getId(), currentUser.getId());
+        return AdminAppUserAccountDTOMapper.mapToAdminAppUserAccountDTO(user);
     }
 
-    public AdminAppUserProfileEditDTO findUserProfileToEdit(Long id) {
+    public AppUserProfileEditDTO findUserProfileData(Long id) {
         return appUserRepository.findById(id)
-                .map(AdminAppUserProfileEditDTOMapper::mapToAdminAppUserProfileEditDTO)
-                .orElseThrow(() -> new AppUserNotFoundException("User with ID " + id + " not found"));
+                .map(AppUserProfileEditDTOMapper::mapToAppUserProfileEditDTO)
+                .orElseThrow(() -> new AppUserNotFoundException("User [ID: " + id + "] not found"));
     }
 
-    @Transactional
-    public AdminAppUserProfileEditDTO updateUserProfile(AppUser currentUser, Long id, AdminAppUserProfileEditDTO userProfile) {
-        Optional<AppUser> userOpt = appUserRepository.findById(id);
-        if (userOpt.isPresent()) {
-            AppUser user = userOpt.get();
-            if (setUserProfileFields(userProfile, user)) {
-                logger.info("User [ID: " + user.getId() + "] profile updated by user [ID: " + currentUser.getId() + "]");
-            }
-
-            return AdminAppUserProfileEditDTOMapper.mapToAdminAppUserProfileEditDTO(user);
+    public AppUserProfileEditDTO updateUserProfileData(AppUser currentUser, Long id, AppUserProfileEditDTO newProfileData) {
+        AppUser user = appUserRepository.findById(id)
+                .orElseThrow(() -> new AppUserNotFoundException("User [ID: " + id + "] not found"));
+        if (newProfileData.getProfileImage() != null) {
+            imageService.updateImage(user.getProfileImage().getId(), newProfileData.getProfileImage());
         }
-
-        throw new AppUserNotFoundException("User with ID " + id + " not found");
+        if (newProfileData.getFirstName() != null && !newProfileData.getFirstName().equals(user.getFirstName())) {
+            user.setFirstName(newProfileData.getFirstName());
+        }
+        if (newProfileData.getLastName() != null && !newProfileData.getLastName().equals(user.getLastName())) {
+            user.setLastName(newProfileData.getLastName());
+        }
+        if (newProfileData.getDateOfBirth() != null && !newProfileData.getDateOfBirth().equals(user.getDateOfBirth().format(ISO_LOCAL_DATE))) {
+            user.setDateOfBirth(LocalDate.parse(newProfileData.getDateOfBirth(), ISO_LOCAL_DATE));
+        }
+        if (newProfileData.getCity() != null && !newProfileData.getCity().equals(user.getCity())) {
+            user.setCity(newProfileData.getCity());
+        }
+        if (newProfileData.getBio() != null && !newProfileData.getBio().equals(user.getBio())) {
+            user.setBio(newProfileData.getBio());
+        }
+        logger.info("User [ID: {}] profile was updated by user [ID: {}]", user.getId(), currentUser.getId());
+        return AppUserProfileEditDTOMapper.mapToAppUserProfileEditDTO(user);
     }
 
-    @Transactional
     public void updateUserPassword(AppUser currentUser, Long id, AdminAppUserPasswordEditDTO newUserPassword) {
         if (!checkIfAdminPasswordIsCorrect(currentUser, newUserPassword.getAdminPassword())) {
-            throw new IncorrectCurrentPasswordException();
+            throw new IncorrectCurrentPasswordException("adminPassword");
         }
-
-        Optional<AppUser> userOpt = appUserRepository.findById(id);
-        if (userOpt.isEmpty()) {
-            throw new AppUserNotFoundException("User with ID " + id + " not found");
-        }
-        AppUser user = userOpt.get();
+        AppUser user = appUserRepository.findById(id)
+                .orElseThrow(() -> new AppUserNotFoundException("User [ID: " + id + "] not found"));
         user.setPassword(passwordEncoder.encode(newUserPassword.getNewPassword()));
-        logger.info("User [ID: " + user.getId() + "] password updated by user [ID: " + currentUser.getId() + "]");
+        appUserRepository.save(user);
+        logger.info("User [ID: {}] password was updated by user [ID: {}]", user.getId(), currentUser.getId());
     }
 
-    public void deleteUser(AppUser currentUser, AdminDeleteAppUserDTO deleteUserData) {
+    public void deleteUser(AppUser currentUser, Long id, AdminDeleteAppUserDTO deleteUserData) {
         if (!checkIfAdminPasswordIsCorrect(currentUser, deleteUserData.getAdminPassword())) {
-            throw new IncorrectCurrentPasswordException();
+            throw new IncorrectCurrentPasswordException("adminPassword");
         }
-
-        if (!currentUser.getId().equals(deleteUserData.getId())) {
-            appUserRepository.deleteById(deleteUserData.getId());
-            logger.info("User [ID: " + deleteUserData.getId() + "] deleted by user [ID: " + currentUser.getId() + "]");
+        if (!currentUser.getId().equals(id)) {
+            try {
+                appUserRepository.deleteById(id);
+                logger.info("User [ID: {}] was deleted by user [ID: {}]", id, currentUser.getId());
+            } catch (EmptyResultDataAccessException ignored) {}
         }
-    }
-
-    private boolean setUserAccountFields(AdminAppUserAccountEditDTO source, AppUser target) {
-        boolean isUpdated = false;
-
-        if (source.isEnabled() != target.isEnabled()) {
-            target.setEnabled(source.isEnabled());
-            isUpdated = true;
-        }
-        if (source.isAccountNonLocked() != target.isAccountNonLocked()) {
-            target.setAccountNonLocked(source.isAccountNonLocked());
-            isUpdated = true;
-        }
-        if (!source.getRoles().equals(target.getRoles())) {
-            target.setRoles(source.getRoles());
-            isUpdated = true;
-        }
-
-        return isUpdated;
-    }
-
-    private boolean setUserProfileFields(AdminAppUserProfileEditDTO source, AppUser target) {
-        boolean isUpdated = false;
-
-        if (source.getProfileImage() != null) {
-            imageService.updateImage(target.getProfileImage().getId(), source.getProfileImage());
-        }
-        if (source.getFirstName() != null && !source.getFirstName().equals(target.getFirstName())) {
-            target.setFirstName(source.getFirstName());
-            isUpdated = true;
-        }
-        if (source.getLastName() != null && !source.getLastName().equals(target.getLastName())) {
-            target.setLastName(source.getLastName());
-            isUpdated = true;
-        }
-        if (source.getDateOfBirth() != null && !source.getDateOfBirth().equals(target.getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
-            target.setDateOfBirth(LocalDate.parse(source.getDateOfBirth(), DateTimeFormatter.ISO_LOCAL_DATE));
-            isUpdated = true;
-        }
-        if (source.getCity() != null && !source.getCity().equals(target.getCity())) {
-            target.setCity(source.getCity());
-            isUpdated = true;
-        }
-        if (source.getBio() != null && !source.getBio().equals(target.getBio())) {
-            target.setBio(source.getBio());
-            isUpdated = true;
-        }
-
-        return isUpdated;
     }
 
     private boolean checkIfAdminPasswordIsCorrect(AppUser admin, String adminPassword) {

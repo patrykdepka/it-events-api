@@ -1,22 +1,29 @@
 package pl.patrykdepka.iteventsapi.appuser;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import pl.patrykdepka.iteventsapi.appuser.domain.AdminAppUserService;
 import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
-import pl.patrykdepka.iteventsapi.appuser.domain.dto.*;
-import pl.patrykdepka.iteventsapi.appuser.domain.exception.IncorrectCurrentPasswordException;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserAccountEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserPasswordEditDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminAppUserTableDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AdminDeleteAppUserDTO;
+import pl.patrykdepka.iteventsapi.appuser.domain.dto.AppUserProfileEditDTO;
 
 import javax.validation.Valid;
-import java.util.Locale;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -24,7 +31,6 @@ import java.util.Locale;
 class AdminAppUserController {
     private final AdminAppUserService adminAppUserService;
     private final CurrentUserFacade currentUserFacade;
-    private final MessageSource messageSource;
 
     @GetMapping("/admin/users")
     Page<AdminAppUserTableDTO> getAllUsers(
@@ -55,68 +61,33 @@ class AdminAppUserController {
 
     @GetMapping("/admin/users/{id}/account")
     AdminAppUserAccountEditDTO getUserAccountData(@PathVariable Long id) {
-        return adminAppUserService.findUserAccountToEdit(id);
+        return adminAppUserService.findUserAccountData(id);
     }
 
-    @PatchMapping("/admin/users/{id}/account")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateUserAccountData(@PathVariable Long id, @Valid @RequestBody AdminAppUserAccountEditDTO userAccount) {
-        adminAppUserService.updateUserAccount(currentUserFacade.getCurrentUser(), id, userAccount);
+    @PutMapping("/admin/users/{id}/account")
+    AdminAppUserAccountEditDTO updateUserAccountData(@PathVariable Long id, @RequestBody @Valid AdminAppUserAccountEditDTO newAccountData) {
+        return adminAppUserService.updateUserAccountData(currentUserFacade.getCurrentUser(), id, newAccountData);
     }
 
     @GetMapping("/admin/users/{id}/profile")
-    AdminAppUserProfileEditDTO getUserProfileData(@PathVariable Long id) {
-        return adminAppUserService.findUserProfileToEdit(id);
+    AppUserProfileEditDTO getUserProfileData(@PathVariable Long id) {
+        return adminAppUserService.findUserProfileData(id);
     }
 
-    @PatchMapping("/admin/users/{id}/profile")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateUserProfileData(@PathVariable Long id, @Valid @RequestBody AdminAppUserProfileEditDTO userProfile) {
-        adminAppUserService.updateUserProfile(currentUserFacade.getCurrentUser(), id, userProfile);
+    @PutMapping("/admin/users/{id}/profile")
+    AppUserProfileEditDTO updateUserProfileData(@PathVariable Long id, @RequestBody @Valid AppUserProfileEditDTO newProfileData) {
+        return adminAppUserService.updateUserProfileData(currentUserFacade.getCurrentUser(), id, newProfileData);
     }
 
-    @PatchMapping("/admin/users/{id}/settings/password")
-    ResponseEntity<?> updateUserPassword(@PathVariable Long id, @Valid @RequestBody AdminAppUserPasswordEditDTO newUserPassword) {
-        try {
-            adminAppUserService.updateUserPassword(currentUserFacade.getCurrentUser(), id, newUserPassword);
-            return ResponseEntity.noContent().build();
-        } catch (IncorrectCurrentPasswordException e) {
-            return ResponseEntity.badRequest()
-                    .body(
-                            new IncorrectCurrentPasswordResponse(
-                                    messageSource.getMessage(
-                                            "form.field.currentPassword.error.invalidCurrentPassword.message",
-                                            null,
-                                            Locale.getDefault()
-                                    )
-                            )
-                    );
-        }
+    @PutMapping("/admin/users/{id}/password")
+    @ResponseStatus(NO_CONTENT)
+    void updateUserPassword(@PathVariable Long id, @RequestBody @Valid AdminAppUserPasswordEditDTO newPasswordData) {
+        adminAppUserService.updateUserPassword(currentUserFacade.getCurrentUser(), id, newPasswordData);
     }
 
     @DeleteMapping("/admin/users/{id}")
-    ResponseEntity<?> deleteUser(@PathVariable Long id, @Valid @RequestBody AdminDeleteAppUserDTO deleteUserData) {
-        try {
-            adminAppUserService.deleteUser(currentUserFacade.getCurrentUser(), deleteUserData);
-            return ResponseEntity.noContent().build();
-        } catch (IncorrectCurrentPasswordException e) {
-            return ResponseEntity.badRequest()
-                    .body(
-                            new IncorrectCurrentPasswordResponse(
-                                    messageSource.getMessage(
-                                            "form.field.currentPassword.error.invalidCurrentPassword.message",
-                                            null,
-                                            Locale.getDefault()
-                                    )
-                            )
-                    );
-        }
-    }
-
-    @Getter
-    @Setter
-    @RequiredArgsConstructor
-    private static class IncorrectCurrentPasswordResponse {
-        private final String adminPassword;
+    @ResponseStatus(NO_CONTENT)
+    void deleteUser(@PathVariable Long id, @RequestBody @Valid AdminDeleteAppUserDTO deleteUserData) {
+        adminAppUserService.deleteUser(currentUserFacade.getCurrentUser(), id, deleteUserData);
     }
 }

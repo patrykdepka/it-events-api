@@ -1,9 +1,9 @@
 package pl.patrykdepka.iteventsapi.security;
 
-import lombok.Getter;
+import lombok.Value;
 
-@Getter
+@Value
 public class LoginData {
-    private String username;
-    private String password;
+    String username;
+    String password;
 }

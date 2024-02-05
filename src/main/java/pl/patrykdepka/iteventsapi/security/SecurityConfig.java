@@ -1,6 +1,7 @@
 package pl.patrykdepka.iteventsapi.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import static pl.patrykdepka.iteventsapi.appuser.domain.Role.*;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final ItEventsAuthenticationSuccessHandler successHandler;
@@ -24,22 +26,6 @@ public class SecurityConfig {
     private final AppUserDetailsService appUserDetailsService;
     private final JwtUtils jwtUtils;
     private final ItEventsAuthenticationEntryPoint itEventsAuthenticationEntryPoint;
-
-    public SecurityConfig(
-            ObjectMapper objectMapper,
-            ItEventsAuthenticationSuccessHandler successHandler,
-            ItEventsAuthenticationFailureHandler failureHandler,
-            AppUserDetailsService appUserDetailsService,
-            JwtUtils jwtUtils,
-            ItEventsAuthenticationEntryPoint itEventsAuthenticationEntryPoint
-    ) {
-        this.objectMapper = objectMapper;
-        this.successHandler = successHandler;
-        this.failureHandler = failureHandler;
-        this.appUserDetailsService = appUserDetailsService;
-        this.jwtUtils = jwtUtils;
-        this.itEventsAuthenticationEntryPoint = itEventsAuthenticationEntryPoint;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
@@ -50,12 +36,12 @@ public class SecurityConfig {
                 .antMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll()
                 .antMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/api/v1/home").permitAll()
+                .antMatchers("/api/v1/main-page").permitAll()
                 .antMatchers("/api/v1/auth/signin", HttpMethod.POST.name()).permitAll()
                 .antMatchers("/api/v1/register").permitAll()
+                .antMatchers("/api/v1/users/me/profile").hasRole(ROLE_USER.getRole())
                 .antMatchers("/api/v1/users").hasRole(ROLE_USER.getRole())
                 .antMatchers("/api/v1/admin/**").hasRole(ROLE_ADMIN.getRole())
-                .antMatchers("/api/v1/events").permitAll()
                 .antMatchers("/api/v1/events/cities/*").permitAll()
                 .antMatchers("/api/v1/archive/events").permitAll()
                 .antMatchers("/api/v1/archive/events/cities/*").permitAll()

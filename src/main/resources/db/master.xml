@@ -20,6 +20,6 @@
     <include file="changelog/2023-05-21/0014_create_table_event_event_image.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2023-05-21/0015_event_images_data.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="changelog/2023-05-21/0016_create_table_event_app_user.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/2023-05-21/0017_event_app_user_data.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="changelog/2023-05-21/0017_events_app_users_data.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="changelog/2023-05-25/0018_add_admin_user.sql" relativeToChangelogFile="true" context="prod"/>
 </databaseChangeLog>

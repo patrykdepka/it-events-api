@@ -1,27 +1,25 @@
 package pl.patrykdepka.iteventsapi.creator;
 
 import pl.patrykdepka.iteventsapi.event.domain.dto.CreateEventDTO;
-import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
-import pl.patrykdepka.iteventsapi.event.domain.EventType;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
+
+import static pl.patrykdepka.iteventsapi.event.domain.AdmissionType.FREE;
+import static pl.patrykdepka.iteventsapi.event.domain.EventType.MEETING;
 
 public class CreateEventDTOCreator {
 
-    public static CreateEventDTO create(LocalDateTime localDateTime) {
+    public static CreateEventDTO create(LocalDateTime dateTime) {
         return CreateEventDTO.builder()
-                .name("Java Dev Talks #1")
-                .eventType(EventType.MEETING)
-                .dateTime(localDateTime.with(TemporalAdjusters.next(DayOfWeek.TUESDAY)).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .name("Dev Meets #001")
+                .eventType(MEETING)
+                .dateTime(dateTime.toString())
                 .language("polski")
-                .admission(AdmissionType.FREE)
+                .admission(FREE)
                 .city("Rzeszów")
                 .location("WSIiZ")
                 .address("Sucharskiego 2, 35-225 Rzeszów")
-                .description("Spotkanie rzeszowskiej grupy pasjonatów języka Java.")
+                .description("Spotkanie rzeszowskich developerów.")
                 .build();
     }
 }

@@ -5,37 +5,45 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
+import pl.patrykdepka.iteventsapi.core.DateTimeProvider;
 import pl.patrykdepka.iteventsapi.event.domain.dto.CityDTO;
-import pl.patrykdepka.iteventsapi.event.domain.dto.EventCardDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 import pl.patrykdepka.iteventsapi.event.domain.exception.EventNotFoundException;
-import pl.patrykdepka.iteventsapi.event.domain.mapper.EventCardDTOMapper;
-import pl.patrykdepka.iteventsapi.event.domain.mapper.EventDTOMapper;
+import pl.patrykdepka.iteventsapi.event.domain.mapper.EventItemListDTOMapper;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventDTOMapper.mapToEventDTO;
+import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventItemListDTOMapper.mapToEventItemListDTOs;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
     private final Logger logger = LoggerFactory.getLogger(EventService.class);
     private final EventRepository eventRepository;
+    private final DateTimeProvider dateTimeProvider;
 
-    public List<EventCardDTO> findFirst10UpcomingEvents() {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findFirst10EventsByOrderByDateTimeAsc());
+    public List<EventItemListDTO> findFirst10UpcomingEvents() {
+        PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
+        List<Event> upcomingEvents = eventRepository.findFirst10UpcomingEvents(dateTimeProvider.getCurrentDateTime(), page).getContent();
+        return EventItemListDTOMapper.mapToEventItemListDTOs(upcomingEvents);
     }
 
-    public EventDTO findEvent(Long id, AppUser currentUser) {
-        return eventRepository
-                .findById(id)
-                .map(event -> EventDTOMapper.mapToEventDTO(event, currentUser))
-                .orElseThrow(() -> new EventNotFoundException("Event with ID " + id + " not found"));
+    @Transactional
+    public EventDTO findEventById(Long id, AppUser currentUser) {
+        return eventRepository.findById(id)
+                .map(event -> mapToEventDTO(event, currentUser))
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + id + "] not found"));
     }
 
     public List<CityDTO> findAllCities() {
@@ -51,60 +59,60 @@ public class EventService {
         return cityDTOs;
     }
 
-    public Page<EventCardDTO> findAllUpcomingEvents(LocalDateTime currentDateTime, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findAllUpcomingEvents(currentDateTime, page));
+    public Page<EventItemListDTO> findUpcomingEvents(Pageable page) {
+        return mapToEventItemListDTOs(eventRepository.findUpcomingEvents(dateTimeProvider.getCurrentDateTime(), page));
     }
 
-    public Page<EventCardDTO> findUpcomingEventsByCity(String city, LocalDateTime currentDateTime, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findUpcomingEventsByCity(city, currentDateTime, page));
+    public Page<EventItemListDTO> findUpcomingEventsByCity(String city, Pageable page) {
+        return mapToEventItemListDTOs(eventRepository.findUpcomingEventsByCity(dateTimeProvider.getCurrentDateTime(), city, page));
     }
 
-    public Page<EventCardDTO> findAllPastEvents(LocalDateTime currentDateTime, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findAllPastEvents(currentDateTime, page));
+    public Page<EventItemListDTO> findPastEvents(Pageable page) {
+        return mapToEventItemListDTOs(eventRepository.findPastEvents(dateTimeProvider.getCurrentDateTime(), page));
     }
 
-    public Page<EventCardDTO> findPastEventsByCity(String city, LocalDateTime currentDateTime, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findPastEventsByCity(city, currentDateTime, page));
-    }
-
-    @Transactional
-    public EventDTO addUserToEventParticipantsList(AppUser currentUser, Long id) {
-        Optional<Event> eventOpt = eventRepository.findById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            if (!event.checkIfUserIsParticipant(currentUser)) {
-                event.addParticipant(currentUser);
-                logger.info("User [ID: " + currentUser.getId() + "] added to event [ID: " + event.getId() + "] participants list");
-            }
-
-            return EventDTOMapper.mapToEventDTO(event, currentUser);
-        }
-
-        throw new EventNotFoundException("Event with ID " + id + " not found");
+    public Page<EventItemListDTO> findPastEventsByCity(String city, Pageable page) {
+        return mapToEventItemListDTOs(eventRepository.findPastEventsByCity(dateTimeProvider.getCurrentDateTime(), city, page));
     }
 
     @Transactional
-    public EventDTO removeUserFromEventParticipantsList(AppUser currentUser, Long id) {
-        Optional<Event> eventOpt = eventRepository.findById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            if (event.checkIfUserIsParticipant(currentUser)) {
-                event.removeParticipant(currentUser);
-                logger.info("User [ID: " + currentUser.getId() + "] removed from event [ID: " + event.getId() + "] participants list");
-            }
-
-            return EventDTOMapper.mapToEventDTO(event, currentUser);
+    public EventDTO addUserToEventParticipantsList(Long id, AppUser currentUser) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + id + "] not found"));
+        if (!event.checkIfUserIsParticipant(currentUser.getId())) {
+            event.addParticipant(currentUser.getId());
+            logger.info("User [ID: {}] was added to event [ID: {}] participants list", currentUser.getId(), event.getId());
         }
 
-        throw new EventNotFoundException("Event with ID " + id + " not found");
+        return mapToEventDTO(event, currentUser);
     }
 
-    public Page<EventCardDTO> findUserEvents(AppUser user, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findUserEvents(user, page));
+    @Transactional
+    public EventDTO removeUserFromEventParticipantsList(Long id, AppUser currentUser) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + id + "] not found"));
+        if (event.checkIfUserIsParticipant(currentUser.getId())) {
+            event.removeParticipant(currentUser.getId());
+            logger.info("User [ID: {}] was removed from event [ID: {}] participants list", currentUser.getId(), event.getId());
+        }
+
+        return mapToEventDTO(event, currentUser);
     }
 
-    public Page<EventCardDTO> findUserEventsByCity(AppUser user, String city, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findUserEventsByCity(user, city, page));
+    public Page<EventItemListDTO> findUserEvents(AppUser user, Pageable page) {
+        List<EventItemListDTO> events = eventRepository.findEventsAndItsParticipants().stream()
+                .filter(e -> e.checkIfUserIsParticipant(user.getId()))
+                .map(EventItemListDTOMapper::mapToEventItemListDTO)
+                .collect(Collectors.toList());
+        return new PageImpl<>(events, page, events.size());
+    }
+
+    public Page<EventItemListDTO> findUserEventsByCity(AppUser user, String city, Pageable page) {
+        List<EventItemListDTO> events = eventRepository.findEventsAndItsParticipantsByCity(city).stream()
+                .filter(e -> e.checkIfUserIsParticipant(user.getId()))
+                .map(EventItemListDTOMapper::mapToEventItemListDTO)
+                .collect(Collectors.toList());
+        return new PageImpl<>(events, page, events.size());
     }
 
     private String getCityNameWithoutPlCharacters(String city) {

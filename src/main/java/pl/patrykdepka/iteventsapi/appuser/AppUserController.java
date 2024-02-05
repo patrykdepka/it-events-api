@@ -23,7 +23,7 @@ class AppUserController {
     private final CurrentUserFacade currentUserFacade;
 
     @PostMapping("/register")
-    ResponseEntity<AppUserProfileDTO> register(@Valid @RequestBody AppUserRegistrationDTO newUserData) {
+    ResponseEntity<AppUserProfileDTO> createUser(@RequestBody @Valid NewUserDTO newUserData) {
         AppUserProfileDTO savedUser = appUserService.createUser(newUserData);
         URI savedUserUri = ServletUriComponentsBuilder
                 .fromUriString("/api/v1/users")
@@ -33,9 +33,9 @@ class AppUserController {
         return ResponseEntity.created(savedUserUri).body(savedUser);
     }
 
-    @GetMapping("/profile")
-    AppUserProfileDTO getUserProfile() {
-        return appUserService.findUserProfile(currentUserFacade.getCurrentUser());
+    @GetMapping("/users/{id}/profile/view")
+    AppUserProfileDTO getUserProfileById(@PathVariable Long id) {
+        return appUserService.findUserProfileById(id);
     }
 
     @GetMapping("/users")
@@ -65,25 +65,24 @@ class AppUserController {
         return appUserService.findUsersBySearch(searchQuery, pageRequest);
     }
 
-    @GetMapping("/users/{id}")
-    AppUserProfileDTO getUserProfile(@PathVariable Long id) {
-        return appUserService.findUserProfileByUserId(id);
+    @GetMapping("/users/me/profile/view")
+    AppUserProfileDTO getCurrentUserProfile() {
+        return appUserService.findUserProfile(currentUserFacade.getCurrentUser());
     }
 
-    @GetMapping("/settings/profile")
-    AppUserProfileEditDTO showUserProfileEditForm() {
-        return appUserService.findUserProfileToEdit(currentUserFacade.getCurrentUser());
+    @GetMapping("/users/me/profile")
+    AppUserProfileEditDTO getCurrentUserProfileData() {
+        return appUserService.findUserProfileData(currentUserFacade.getCurrentUser());
     }
 
-    @PatchMapping("/settings/profile")
+    @PutMapping("/users/me/profile")
+    AppUserProfileEditDTO updateCurrentUserProfileData(@RequestBody @Valid AppUserProfileEditDTO newProfileData) {
+        return appUserService.updateUserProfileData(currentUserFacade.getCurrentUser(), newProfileData);
+    }
+
+    @PutMapping("/users/me/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateUserProfile(@Valid @RequestBody AppUserProfileEditDTO userProfile) {
-        appUserService.updateUserProfile(currentUserFacade.getCurrentUser(), userProfile);
-    }
-
-    @PatchMapping("/settings/password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateUserPassword(@Valid @RequestBody AppUserPasswordEditDTO newUserPassword) {
+    void updateCurrentUserPassword(@RequestBody @Valid AppUserPasswordEditDTO newUserPassword) {
         appUserService.updateUserPassword(currentUserFacade.getCurrentUser(), newUserPassword);
     }
 }

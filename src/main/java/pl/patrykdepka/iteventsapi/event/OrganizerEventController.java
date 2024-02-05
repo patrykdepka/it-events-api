@@ -5,21 +5,37 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
+import pl.patrykdepka.iteventsapi.event.domain.EventService;
 import pl.patrykdepka.iteventsapi.event.domain.OrganizerEventService;
-import pl.patrykdepka.iteventsapi.event.domain.dto.*;
+import pl.patrykdepka.iteventsapi.event.domain.dto.CityDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.CreateEventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.ParticipantDTO;
 import pl.patrykdepka.iteventsapi.event.domain.exception.CityNotFoundException;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.data.domain.Sort.Direction.ASC;
+
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 class OrganizerEventController {
+    private final EventService eventService;
     private final OrganizerEventService organizerEventService;
     private final CurrentUserFacade currentUserFacade;
 
@@ -35,34 +51,31 @@ class OrganizerEventController {
     }
 
     @GetMapping("/organizer/events")
-    Page<EventCardDTO> findOrganizerEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
+    Page<EventItemListDTO> getOrganizerEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(ASC, "dateTime"));
         return organizerEventService.findOrganizerEvents(currentUserFacade.getCurrentUser(), pageRequest);
     }
 
     @GetMapping("/organizer/events/cities/{city}")
-    Page<EventCardDTO> findOrganizerEventsByCity(
+    Page<EventItemListDTO> getOrganizerEventsByCity(
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
-        List<CityDTO> cities = organizerEventService.findAllCities();
+        List<CityDTO> cities = eventService.findAllCities();
         city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(ASC, "dateTime"));
         return organizerEventService.findOrganizerEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest);
     }
 
     @GetMapping("/organizer/events/{id}/edit")
-    EventEditDTO showEditEventForm(@PathVariable Long id) {
+    EventEditDTO getEventToEdit(@PathVariable Long id) {
         return organizerEventService.findEventToEdit(currentUserFacade.getCurrentUser(), id);
     }
 
     @PutMapping("/organizer/events/{id}")
-    EventEditDTO updateEvent(
-            @PathVariable Long id,
-            @Valid @RequestBody EventEditDTO eventEditData
-    ) {
+    EventEditDTO updateEvent(@PathVariable Long id, @Valid @RequestBody EventEditDTO eventEditData) {
         return organizerEventService.updateEvent(currentUserFacade.getCurrentUser(), id, eventEditData);
     }
 
@@ -72,19 +85,19 @@ class OrganizerEventController {
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
         int page = pageNumber != null ? pageNumber : 1;
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "lastName"));
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(ASC, "lastName"));
         return organizerEventService.findEventParticipants(currentUserFacade.getCurrentUser(), id, pageRequest);
     }
 
-    @PutMapping("/organizer/events/{eventId}/participants/{participantId}")
+    @PutMapping("/organizer/events/{id}/participants/{participantId}")
     Page<ParticipantDTO> removeParticipantFromEvent(
-            @PathVariable Long eventId,
+            @PathVariable Long id,
             @PathVariable Long participantId,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
         int page = pageNumber != null ? pageNumber : 1;
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "lastName"));
-        return organizerEventService.removeParticipant(currentUserFacade.getCurrentUser(), eventId, participantId, pageRequest);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(ASC, "lastName"));
+        return organizerEventService.removeParticipant(currentUserFacade.getCurrentUser(), id, participantId, pageRequest);
     }
 
     private String getCity(List<CityDTO> cities, String city) {

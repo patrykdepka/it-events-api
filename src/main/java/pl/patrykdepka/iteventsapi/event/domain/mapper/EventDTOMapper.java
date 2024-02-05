@@ -1,15 +1,15 @@
 package pl.patrykdepka.iteventsapi.event.domain.mapper;
 
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
-import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.domain.Event;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 public class EventDTOMapper {
 
-    public static EventDTO mapToEventDTO(Event event, AppUser currentUser) {
+    public static EventDTO mapToEventDTO(Event event, AppUser user) {
         return new EventDTO.EventDTOBuilder()
                 .id(event.getId())
                 .name(event.getName())
@@ -28,7 +28,7 @@ public class EventDTOMapper {
                 .organizerImageData(Base64.getEncoder().encodeToString(event.getOrganizer().getProfileImage().getFileData()))
                 .organizerName(event.getOrganizer().getFirstName() + " " + event.getOrganizer().getLastName())
                 .description(event.getDescription())
-                .currentUserIsParticipant(event.checkIfUserIsParticipant(currentUser))
+                .currentUserIsParticipant(event.checkIfUserIsParticipant(user.getId()))
                 .build();
     }
 }

@@ -6,10 +6,21 @@ import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.core.BaseEntity;
 import pl.patrykdepka.iteventsapi.image.domain.Image;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -39,24 +50,23 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "organizer_id")
     private AppUser organizer;
     private String description;
-    @OneToMany
-    @JoinTable(
-            name = "event_app_user",
-            joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "app_user_id", referencedColumnName = "id")
-    )
-    private List<AppUser> participants = new ArrayList<>();
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventsAppUsers> participants = new HashSet<>();
 
-    public void addParticipant(AppUser user) {
-        participants.add(user);
+    public boolean checkIfUserIsParticipant(Long participantId) {
+        for(var participant : participants) {
+            if (participant.getAppUserId().equals(participantId)) return true;
+        }
+
+        return false;
     }
 
-    public void removeParticipant(AppUser user) {
-        participants.remove(user);
+    public void addParticipant(Long participantId) {
+        participants.add(new EventsAppUsers(this, participantId));
     }
 
-    public boolean checkIfUserIsParticipant(AppUser user) {
-        return participants.contains(user);
+    public void removeParticipant(Long participantId) {
+        participants.removeIf(participant -> participant.getAppUserId().equals(participantId));
     }
 
     public static EventBuilder builder() {
@@ -76,7 +86,7 @@ public class Event extends BaseEntity {
         private String address;
         private AppUser organizer;
         private String description;
-        private List<AppUser> participants;
+        private Set<EventsAppUsers> participants;
 
         public EventBuilder id(Long id) {
             this.id = id;
@@ -138,7 +148,7 @@ public class Event extends BaseEntity {
             return this;
         }
 
-        public EventBuilder participants(List<AppUser> participants) {
+        public EventBuilder participants(Set<EventsAppUsers> participants) {
             this.participants = participants;
             return this;
         }

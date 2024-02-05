@@ -1,18 +1,21 @@
 package pl.patrykdepka.iteventsapi.appuser.domain.dto;
 
-import lombok.Value;
-import pl.patrykdepka.iteventsapi.image.domain.ImageType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppUserProfileDTO {
-    Long id;
-    ImageType profileImageType;
-    String profileImageData;
-    String firstName;
-    String lastName;
-    String dateOfBirth;
-    String city;
-    String bio;
+    private Long id;
+    private String contentType;
+    private String profileImageData;
+    private String firstName;
+    private String lastName;
+    private String dateOfBirth;
+    private String city;
+    private String bio;
 
     public static AppUserProfileDTOBuilder builder() {
         return new AppUserProfileDTOBuilder();
@@ -20,7 +23,7 @@ public class AppUserProfileDTO {
 
     public static class AppUserProfileDTOBuilder {
         private Long id;
-        private ImageType profileImageType;
+        private String contentType;
         private String profileImageData;
         private String firstName;
         private String lastName;
@@ -33,8 +36,8 @@ public class AppUserProfileDTO {
             return this;
         }
 
-        public AppUserProfileDTOBuilder profileImageType(ImageType profileImageType) {
-            this.profileImageType = profileImageType;
+        public AppUserProfileDTOBuilder contentType(String contentType) {
+            this.contentType = contentType;
             return this;
         }
 
@@ -71,7 +74,7 @@ public class AppUserProfileDTO {
         public AppUserProfileDTO build() {
             return new AppUserProfileDTO(
                     id,
-                    profileImageType,
+                    contentType,
                     profileImageData,
                     firstName,
                     lastName,

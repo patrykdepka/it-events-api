@@ -1,112 +1,49 @@
 package pl.patrykdepka.iteventsapi.creator;
 
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
-import pl.patrykdepka.iteventsapi.appuser.domain.Role;
-import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import static pl.patrykdepka.iteventsapi.appuser.domain.Role.ROLE_USER;
-import static pl.patrykdepka.iteventsapi.creator.ProfileImageCreator.createDefaultProfileImage;
+import static pl.patrykdepka.iteventsapi.creator.ImageCreator.createDefaultProfileImage;
 
 public class AppUserCreator {
 
-    public static AppUser create(Long id, String firstName, String lastName) {
+    public static AppUser createUser() {
         return AppUser.builder()
-                .id(id)
+                .id(3L)
+                .uuid("e7992837-043c-4984-a3b0-eed743cf2eb0")
                 .profileImage(createDefaultProfileImage())
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.of(1995, 10, 6))
-                .city(null)
-                .bio(null)
-                .email(firstName.toLowerCase() + lastName.toLowerCase() + "@example.com")
-                .password("{bcrypt}$2a$10$2pZqxIPWTiwqmN.ApjAQsOC6Q/ql4canuxFiZruGYDvZ5RRYDMDr6") // tests
-                .enabled(true)
-                .accountNonLocked(true)
-                .roles(List.of(ROLE_USER))
+                .firstName("User")
+                .lastName("User")
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                .city("Rzeszów")
+                .bio("Cześć! Jestem domyślnym użytkownikiem tego serwisu.")
+                .password("{bcrypt}$2a$10$nHSdx9AeVyj/KC9jqp9a8uiYy9Jr4lY/ILwMQJdshw98HBPn3mQhe")
                 .build();
     }
 
-    public static AppUser create(Long id, String firstName, String lastName, Role role) {
+    public static AppUser createEventParticipant() {
         return AppUser.builder()
-                .id(id)
+                .id(5L)
+                .uuid("fb0228cd-1729-409d-9221-699fd2943fb2")
+                .build();
+    }
+
+    public static AppUser createOrganizer() {
+        return AppUser.builder()
+                .id(2L)
+                .uuid("48d28bdc-64b5-4415-9e29-9a86100aa22c")
                 .profileImage(createDefaultProfileImage())
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.of(1995, 10, 6))
-                .city(null)
-                .bio(null)
-                .email(firstName.toLowerCase() + lastName.toLowerCase() + "@example.com")
-                .password("{bcrypt}$2a$10$2pZqxIPWTiwqmN.ApjAQsOC6Q/ql4canuxFiZruGYDvZ5RRYDMDr6") // tests
-                .enabled(true)
-                .accountNonLocked(true)
-                .roles(List.of(role))
+                .firstName("Organizer")
+                .lastName("Organizer")
                 .build();
     }
 
-    public static AppUser create(String firstName, String lastName) {
+    public static AppUser createAdmin() {
         return AppUser.builder()
-                .profileImage(createDefaultProfileImage())
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.of(1995, 10, 6))
-                .city(null)
-                .bio(null)
-                .email(firstName.toLowerCase() + lastName.toLowerCase() + "@example.com")
-                .password("{bcrypt}$2a$10$2pZqxIPWTiwqmN.ApjAQsOC6Q/ql4canuxFiZruGYDvZ5RRYDMDr6") // tests
-                .enabled(true)
-                .accountNonLocked(true)
-                .roles(List.of(ROLE_USER))
-                .build();
-    }
-
-    public static AppUser create(String firstName, String lastName, Image profileImage) {
-        return AppUser.builder()
-                .profileImage(profileImage)
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.of(1995, 10, 6))
-                .city(null)
-                .bio(null)
-                .email(firstName.toLowerCase() + lastName.toLowerCase() + "@example.com")
-                .password("{bcrypt}$2a$10$2pZqxIPWTiwqmN.ApjAQsOC6Q/ql4canuxFiZruGYDvZ5RRYDMDr6") // tests
-                .enabled(true)
-                .accountNonLocked(true)
-                .roles(List.of(ROLE_USER))
-                .build();
-    }
-
-    public static AppUser create(String firstName, String lastName, Role role) {
-        return AppUser.builder()
-                .profileImage(createDefaultProfileImage())
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.of(1995, 10, 6))
-                .city(null)
-                .bio(null)
-                .email(firstName.toLowerCase() + lastName.toLowerCase() + "@example.com")
-                .password("{bcrypt}$2a$10$2pZqxIPWTiwqmN.ApjAQsOC6Q/ql4canuxFiZruGYDvZ5RRYDMDr6") // tests
-                .enabled(true)
-                .accountNonLocked(true)
-                .roles(List.of(role))
-                .build();
-    }
-
-    public static AppUser create(String firstName, String lastName, Image profileImage, Role role) {
-        return AppUser.builder()
-                .profileImage(profileImage)
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.of(1995, 10, 6))
-                .city(null)
-                .bio(null)
-                .email(firstName.toLowerCase() + lastName.toLowerCase() + "@example.com")
-                .password("{bcrypt}$2a$10$2pZqxIPWTiwqmN.ApjAQsOC6Q/ql4canuxFiZruGYDvZ5RRYDMDr6") // tests
-                .enabled(true)
-                .accountNonLocked(true)
-                .roles(List.of(role))
+                .id(1L)
+                .uuid("37ab2ef8-c644-44df-abe8-375009d957ac")
+                .password("{bcrypt}$2a$10$nHSdx9AeVyj/KC9jqp9a8uiYy9Jr4lY/ILwMQJdshw98HBPn3mQhe")
                 .build();
     }
 }

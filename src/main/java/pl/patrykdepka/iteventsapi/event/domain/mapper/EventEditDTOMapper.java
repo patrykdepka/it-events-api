@@ -1,12 +1,14 @@
 package pl.patrykdepka.iteventsapi.event.domain.mapper;
 
-import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
 import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
-import pl.patrykdepka.iteventsapi.event.domain.EventType;
 import pl.patrykdepka.iteventsapi.event.domain.Event;
+import pl.patrykdepka.iteventsapi.event.domain.EventType;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
 import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import java.util.Base64;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 public class EventEditDTOMapper {
 
@@ -15,7 +17,7 @@ public class EventEditDTOMapper {
                 .name(event.getName())
                 .eventImageData(convertImageToBase64String(event.getEventImage()))
                 .eventType(EventType.valueOf(event.getEventType().toString()))
-                .dateTime(event.getDateTime().toString())
+                .dateTime(event.getDateTime().format(ISO_LOCAL_DATE_TIME))
                 .language(event.getLanguage())
                 .admission(AdmissionType.valueOf(event.getAdmission().toString()))
                 .city(event.getCity())

@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageService {
     public static final String DEFAULT_PROFILE_IMAGE_NAME = "default_profile_image.png";
-    public static final String DEFAULT_EVENT_IMAGE_NAME = "default_profile_image.png";
+    public static final String DEFAULT_EVENT_IMAGE_NAME = "default_event_image.png";
     private final ImageRepository imageRepository;
 
     public Image createDefaultImage(String filename, ImageType type) {
@@ -37,7 +37,7 @@ public class ImageService {
     public void updateImage(Long id, ImageDTO file) {
         Optional<Image> userProfileImageOpt = imageRepository.findById(id);
 
-        if (!userProfileImageOpt.isPresent()) {
+        if (userProfileImageOpt.isEmpty()) {
             throw new ImageNotFoundException("File not found");
         }
 
@@ -45,5 +45,6 @@ public class ImageService {
         image.setFileName(file.getFilename());
         image.setFileData(Base64.getDecoder().decode(file.getContent()));
         image.setContentType(file.getContentType());
+        imageRepository.save(image);
     }
 }

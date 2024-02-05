@@ -1,26 +1,28 @@
 package pl.patrykdepka.iteventsapi.creator;
 
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
-import pl.patrykdepka.iteventsapi.event.domain.AdmissionType;
-import pl.patrykdepka.iteventsapi.event.domain.EventType;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static pl.patrykdepka.iteventsapi.event.domain.AdmissionType.PAID;
+import static pl.patrykdepka.iteventsapi.event.domain.EventType.ONLINE;
 
 public class EventEditDTOCreator {
 
-    public static EventEditDTO create(LocalDateTime dateTime) throws IOException {
+    public static EventEditDTO create(LocalDateTime dateTime) {
         return EventEditDTO.builder()
-                .name("Updated test name")
-//                .eventImage(EventImageCreator.createNewEventImageFile())
-                .eventType(EventType.CONFERENCE)
-                .dateTime(dateTime.plusWeeks(1L).toString())
-                .language("Updated test language")
-                .admission(AdmissionType.PAID)
-                .city("Updated test city")
-                .location("Updated test location")
-                .address("Updated test address")
-                .description("Updated test description")
+                .name("Testowa nazwa")
+                .eventImageData(null)
+                .eventImage(null)
+                .eventType(ONLINE)
+                .dateTime(dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .language("Testowy język")
+                .admission(PAID)
+                .city("Testowe miasto")
+                .location("Testowa lokacja")
+                .address("Testowy adres")
+                .description("Testowy opis")
                 .build();
     }
 }

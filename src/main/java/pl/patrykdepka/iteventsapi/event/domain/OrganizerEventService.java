@@ -1,6 +1,5 @@
 package pl.patrykdepka.iteventsapi.event.domain;
 
-import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,20 +9,23 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
-import pl.patrykdepka.iteventsapi.event.domain.dto.*;
+import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
+import pl.patrykdepka.iteventsapi.event.domain.dto.CreateEventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.ParticipantDTO;
 import pl.patrykdepka.iteventsapi.event.domain.exception.EventNotFoundException;
-import pl.patrykdepka.iteventsapi.event.domain.mapper.EventCardDTOMapper;
-import pl.patrykdepka.iteventsapi.event.domain.mapper.EventDTOMapper;
-import pl.patrykdepka.iteventsapi.event.domain.mapper.EventEditDTOMapper;
 import pl.patrykdepka.iteventsapi.event.domain.mapper.ParticipantDTOMapper;
 import pl.patrykdepka.iteventsapi.image.domain.ImageService;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventDTOMapper.mapToEventDTO;
+import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventEditDTOMapper.mapToEventEditDTO;
+import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventItemListDTOMapper.mapToEventItemListDTOs;
 import static pl.patrykdepka.iteventsapi.image.domain.ImageService.DEFAULT_EVENT_IMAGE_NAME;
 import static pl.patrykdepka.iteventsapi.image.domain.ImageType.EVENT_IMAGE;
 
@@ -33,13 +35,14 @@ public class OrganizerEventService {
     private final Logger logger = LoggerFactory.getLogger(OrganizerEventService.class);
     private final EventRepository eventRepository;
     private final ImageService imageService;
+    private final AppUserRepository appUserRepository;
 
     public EventDTO createEvent(AppUser currentUser, CreateEventDTO newEventData) {
         Event event = new Event();
         event.setName(newEventData.getName());
         event.setEventImage(imageService.createDefaultImage(DEFAULT_EVENT_IMAGE_NAME, EVENT_IMAGE));
         event.setEventType(newEventData.getEventType());
-        event.setDateTime(LocalDateTime.parse(newEventData.getDateTime(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        event.setDateTime(LocalDateTime.parse(newEventData.getDateTime(), ISO_LOCAL_DATE_TIME));
         event.setLanguage(newEventData.getLanguage());
         event.setAdmission(newEventData.getAdmission());
         event.setCity(newEventData.getCity());
@@ -48,87 +51,65 @@ public class OrganizerEventService {
         event.setOrganizer(currentUser);
         event.setDescription(newEventData.getDescription());
         Event createdEvent = eventRepository.save(event);
-        logger.info("Event [ID: " + createdEvent.getId() + "] created by user [ID: " + currentUser.getId() + "]");
-        return EventDTOMapper.mapToEventDTO(createdEvent, currentUser);
+        logger.info("Event [ID: {}] was created by user [ID: {}]", createdEvent.getId(), currentUser.getId());
+        return mapToEventDTO(createdEvent, currentUser);
     }
 
-    public List<CityDTO> findAllCities() {
-        List<String> cities = eventRepository.findAllCities();
-        List<CityDTO> cityDTOs = new ArrayList<>();
-        for (String city : cities) {
-            CityDTO cityDTO = new CityDTO(
-                    getCityNameWithoutPlCharacters(city),
-                    city
-            );
-            cityDTOs.add(cityDTO);
+    public Page<EventItemListDTO> findOrganizerEvents(AppUser currentUser, Pageable page) {
+        return mapToEventItemListDTOs(eventRepository.findOrganizerEvents(currentUser, page));
+    }
+
+    public Page<EventItemListDTO> findOrganizerEventsByCity(AppUser currentUser, String city, Pageable page) {
+        return mapToEventItemListDTOs(eventRepository.findOrganizerEventsByCity(currentUser, city, page));
+    }
+
+    public EventEditDTO findEventToEdit(AppUser currentUser, Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + eventId + "] not found"));
+        if (!event.getOrganizer().equals(currentUser)) {
+            throw new AccessDeniedException("Access is denied");
         }
-        return cityDTOs;
+        return mapToEventEditDTO(event);
     }
 
-    public Page<EventCardDTO> findOrganizerEvents(AppUser currentUser, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findOrganizerEvents(currentUser, page));
-    }
-
-    public Page<EventCardDTO> findOrganizerEventsByCity(AppUser currentUser, String city, Pageable page) {
-        return EventCardDTOMapper.mapToEventCardDTOs(eventRepository.findOrganizerEventsByCity(currentUser, city, page));
-    }
-
-    public EventEditDTO findEventToEdit(AppUser currentUser, Long id) {
-        return EventEditDTOMapper.mapToEventEditDTO(returnEventIfCurrentUserIsOrganizer(currentUser, id));
-    }
-
-    @Transactional
     public EventEditDTO updateEvent(AppUser currentUser, Long id, EventEditDTO eventEditData) {
-        Optional<Event> eventOpt = eventRepository.findById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            setEventFields(eventEditData, event);
-            logger.info("Event [ID: " + event.getId() + "] updated by user [ID: " + currentUser.getId() + "]");
-            return EventEditDTOMapper.mapToEventEditDTO(event);
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + id + "] not found"));
+        if (!event.getOrganizer().equals(currentUser)) {
+            throw new AccessDeniedException("Access is denied");
         }
-
-        throw new EventNotFoundException("Event with ID " + id + " not found");
+        setEventFields(eventEditData, event);
+        logger.info("Event [ID: {}] was updated by user [ID: {}]", event.getId(), currentUser.getId());
+        return mapToEventEditDTO(event);
     }
 
     public Page<ParticipantDTO> findEventParticipants(AppUser currentUser, Long id, Pageable page) {
-        Event event = returnEventIfCurrentUserIsOrganizer(currentUser, id);
-        return ParticipantDTOMapper.mapToParticipantDTOs(event.getParticipants(), page);
+        Event event = eventRepository.findEventAndItsParticipantsByEventId(id)
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + id + "] not found"));
+        if (!currentUser.equals(event.getOrganizer())) {
+            throw new AccessDeniedException("Access is denied");
+        }
+        List<Long> participants = event.getParticipants().stream()
+                .map(EventsAppUsers::getAppUserId)
+                .toList();
+        return ParticipantDTOMapper.mapToParticipantDTOs(appUserRepository.findAllById(participants), page);
     }
 
     @Transactional
     public Page<ParticipantDTO> removeParticipant(AppUser currentUser, Long eventId, Long participantId, Pageable page) {
-        Event event = returnEventIfCurrentUserIsOrganizer(currentUser, eventId);
-        Optional<AppUser> userOpt = event.getParticipants()
-                .stream()
-                .filter(participant -> participant.getId().equals(participantId))
-                .findFirst();
-        if (userOpt.isPresent()) {
-            AppUser user = userOpt.get();
-            event.removeParticipant(user);
-            logger.info("User [ID: " + user.getId() + "] removed from event [ID: " + event.getId() + "] participants list by user [ID: " + currentUser.getId() + "]");
+        Event event = eventRepository.findEventAndItsParticipantsByEventId(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Event [ID: " + eventId + "] not found"));
+        if (!currentUser.equals(event.getOrganizer())) {
+            throw new AccessDeniedException("Access is denied");
         }
-        return ParticipantDTOMapper.mapToParticipantDTOs(event.getParticipants(), page);
-    }
-
-    private String getCityNameWithoutPlCharacters(String city) {
-        city = city.toLowerCase();
-        city = city.replace("\\s", "-");
-        city = StringUtils.stripAccents(city);
-        return city;
-    }
-
-    private Event returnEventIfCurrentUserIsOrganizer(AppUser currentUser, Long id) {
-        Optional<Event> eventOpt = eventRepository.findById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            if (!currentUser.equals(event.getOrganizer())) {
-                throw new AccessDeniedException("Access is denied");
-            }
-
-            return event;
+        if (event.checkIfUserIsParticipant(participantId)) {
+            event.removeParticipant(participantId);
+            logger.info("User [ID: {}] was removed from event [ID: {}] participants list by user [ID: {}]", participantId, eventId, currentUser.getId());
         }
-
-        throw new EventNotFoundException("Event with ID " + id + " not found");
+        List<Long> participants = event.getParticipants().stream()
+                .map(EventsAppUsers::getAppUserId)
+                .toList();
+        return ParticipantDTOMapper.mapToParticipantDTOs(appUserRepository.findAllById(participants), page);
     }
 
     private void setEventFields(EventEditDTO source, Event target) {
@@ -139,7 +120,7 @@ public class OrganizerEventService {
             imageService.updateImage(target.getEventImage().getId(), source.getEventImage());
         }
         if (source.getDateTime() != null && !source.getDateTime().equals(target.getDateTime().toString())) {
-            target.setDateTime(LocalDateTime.parse(source.getDateTime(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            target.setDateTime(LocalDateTime.parse(source.getDateTime(), ISO_LOCAL_DATE_TIME));
         }
         if (source.getEventType() != null && source.getEventType() != target.getEventType()) {
             target.setEventType(source.getEventType());

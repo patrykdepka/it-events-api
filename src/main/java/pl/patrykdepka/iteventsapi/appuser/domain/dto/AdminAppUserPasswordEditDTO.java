@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
         )
 })
 public class AdminAppUserPasswordEditDTO {
-    Long id;
     @NotBlank(message = "{form.field.adminPassword.error.notBlank.message}")
     @Size(min = 5, max = 100, message = "{form.field.adminPassword.error.size.message}")
     String adminPassword;

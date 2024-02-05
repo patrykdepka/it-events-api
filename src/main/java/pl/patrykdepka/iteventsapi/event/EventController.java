@@ -4,16 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
 import pl.patrykdepka.iteventsapi.event.domain.EventService;
 import pl.patrykdepka.iteventsapi.event.domain.dto.CityDTO;
-import pl.patrykdepka.iteventsapi.event.domain.dto.EventCardDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.domain.exception.CityNotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -23,25 +26,25 @@ class EventController {
     private final EventService eventService;
     private final CurrentUserFacade currentUserFacade;
 
-    @GetMapping("/home")
-    List<EventCardDTO> showMainPage() {
+    @GetMapping("/main-page")
+    List<EventItemListDTO> getAllDataForMainPage() {
         return eventService.findFirst10UpcomingEvents();
     }
 
     @GetMapping("/events/{id}")
-    EventDTO getEvent(@PathVariable Long id) {
-        return eventService.findEvent(id, currentUserFacade.getCurrentUser());
+    EventDTO getEventById(@PathVariable Long id) {
+        return eventService.findEventById(id, currentUserFacade.getCurrentUser());
     }
 
     @GetMapping("/events")
-    Page<EventCardDTO> getAllUpcomingEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
+    Page<EventItemListDTO> getUpcomingEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
-        return eventService.findAllUpcomingEvents(LocalDateTime.now(), pageRequest);
+        return eventService.findUpcomingEvents(pageRequest);
     }
 
     @GetMapping("/events/cities/{city}")
-    Page<EventCardDTO> getUpcomingEventsByCity(
+    Page<EventItemListDTO> getUpcomingEventsByCity(
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
@@ -49,18 +52,18 @@ class EventController {
         city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
-        return eventService.findUpcomingEventsByCity(city, LocalDateTime.now(), pageRequest);
+        return eventService.findUpcomingEventsByCity(city, pageRequest);
     }
 
     @GetMapping("/archive/events")
-    Page<EventCardDTO> getAllPastEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
+    Page<EventItemListDTO> getPastEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        return eventService.findAllPastEvents(LocalDateTime.now(), pageRequest);
+        return eventService.findPastEvents(pageRequest);
     }
 
     @GetMapping("/archive/events/cities/{city}")
-    Page<EventCardDTO> getPastEventsByCity(
+    Page<EventItemListDTO> getPastEventsByCity(
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
@@ -68,30 +71,28 @@ class EventController {
         city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
-        return eventService.findPastEventsByCity(city, LocalDateTime.now(), pageRequest);
+        return eventService.findPastEventsByCity(city, pageRequest);
     }
 
     @PostMapping("/events/{id}/join")
-    ResponseEntity<EventDTO> joinEvent(@PathVariable Long id) {
-        EventDTO event = eventService.addUserToEventParticipantsList(currentUserFacade.getCurrentUser(), id);
-        return ResponseEntity.ok(event);
+    EventDTO joinEvent(@PathVariable Long id) {
+        return eventService.addUserToEventParticipantsList(id, currentUserFacade.getCurrentUser());
     }
 
     @PostMapping("/events/{id}/leave")
-    ResponseEntity<EventDTO> leaveEvent(@PathVariable Long id) {
-        EventDTO event = eventService.removeUserFromEventParticipantsList(currentUserFacade.getCurrentUser(), id);
-        return ResponseEntity.ok(event);
+    EventDTO leaveEvent(@PathVariable Long id) {
+        return eventService.removeUserFromEventParticipantsList(id, currentUserFacade.getCurrentUser());
     }
 
-    @GetMapping("/events/my_events")
-    Page<EventCardDTO> getUserEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
+    @GetMapping("/events/my")
+    Page<EventItemListDTO> getUserEvents(@RequestParam(name = "page", required = false) Integer pageNumber) {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
         return eventService.findUserEvents(currentUserFacade.getCurrentUser(), pageRequest);
     }
 
-    @GetMapping("/events/my_events/cities/{city}")
-    Page<EventCardDTO> getUserEventsByCity(
+    @GetMapping("/events/my/cities/{city}")
+    Page<EventItemListDTO> getUserEventsByCity(
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {

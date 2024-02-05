@@ -33,18 +33,18 @@ public class ImageValidator implements ConstraintValidator<Image, ImageDTO> {
             boolean isContentTypeValid = Arrays.asList(allowedFileTypes).contains(contentType);
 
             if (!isContentTypeValid) {
-                errorMessages.add("{form.field.image.error.invalidFileType.message}");
+                errorMessages.add("{validation.annotation.Image.invalidFileType.message}");
             } else {
                 try {
                     byte[] bytes = Base64.getDecoder().decode(imageData.getContent());
                     BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
 
                     if (image.getHeight() > height || image.getWidth() > width) {
-                        errorMessages.add("{form.field.image.error.invalidImageSize.message}");
+                        errorMessages.add("{validation.annotation.Image.invalidImageSize.message}");
                     }
 
                     if (bytes.length > 2097152) {
-                        errorMessages.add("{form.field.image.error.invalidFileSize.message}");
+                        errorMessages.add("{validation.annotation.Image.invalidFileSize.message}");
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);

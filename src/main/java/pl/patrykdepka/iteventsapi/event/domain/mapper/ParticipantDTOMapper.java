@@ -12,11 +12,15 @@ import java.util.stream.Collectors;
 public class ParticipantDTOMapper {
 
     public static Page<ParticipantDTO> mapToParticipantDTOs(List<AppUser> participants, Pageable pageable) {
-        List<ParticipantDTO> participantsList = participants
-                .stream()
+        List<ParticipantDTO> participantsList = participants.stream()
                 .map(ParticipantDTOMapper::mapToParticipantDTO)
                 .collect(Collectors.toList());
-        return new PageImpl<>(participantsList, pageable, participantsList.size());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), participantsList.size());
+        List<ParticipantDTO> pageContent = participantsList.subList(start, end);
+
+        return new PageImpl<>(pageContent, pageable, participantsList.size());
     }
 
     private static ParticipantDTO mapToParticipantDTO(AppUser user) {

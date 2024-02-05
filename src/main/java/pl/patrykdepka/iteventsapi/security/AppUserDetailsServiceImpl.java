@@ -1,5 +1,6 @@
 package pl.patrykdepka.iteventsapi.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,22 +11,16 @@ import org.springframework.stereotype.Service;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
 
-import javax.transaction.Transactional;
 import java.util.Base64;
 
 @Service
+@RequiredArgsConstructor
 public class AppUserDetailsServiceImpl implements AppUserDetailsService {
     private final AppUserRepository appUserRepository;
 
-    public AppUserDetailsServiceImpl(AppUserRepository appUserRepository) {
-        this.appUserRepository = appUserRepository;
-    }
-
-    @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return appUserRepository
-                .findByEmail(username)
+        return appUserRepository.findByEmail(username)
                 .map(this::createAppUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with email %s not found", username)));
     }
