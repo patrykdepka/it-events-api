@@ -15,19 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
-import pl.patrykdepka.iteventsapi.event.domain.EventService;
 import pl.patrykdepka.iteventsapi.event.domain.OrganizerEventService;
-import pl.patrykdepka.iteventsapi.event.domain.dto.CityDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.CreateEventDTO;
-import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.ParticipantDTO;
-import pl.patrykdepka.iteventsapi.event.domain.exception.CityNotFoundException;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
@@ -35,7 +31,6 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 class OrganizerEventController {
-    private final EventService eventService;
     private final OrganizerEventService organizerEventService;
     private final CurrentUserFacade currentUserFacade;
 
@@ -62,8 +57,6 @@ class OrganizerEventController {
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
-        List<CityDTO> cities = eventService.findAllCities();
-        city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(ASC, "dateTime"));
         return organizerEventService.findOrganizerEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest);
@@ -98,15 +91,5 @@ class OrganizerEventController {
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(ASC, "lastName"));
         return organizerEventService.removeParticipant(currentUserFacade.getCurrentUser(), id, participantId, pageRequest);
-    }
-
-    private String getCity(List<CityDTO> cities, String city) {
-        for (CityDTO cityDTO : cities) {
-            if (cityDTO.getNameWithoutPlCharacters().equals(city)) {
-                return cityDTO.getDisplayName();
-            }
-        }
-
-        throw new CityNotFoundException("City with name " + city + " not found");
     }
 }

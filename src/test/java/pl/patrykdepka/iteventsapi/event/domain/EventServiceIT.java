@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import pl.patrykdepka.iteventsapi.core.BaseIT;
-import pl.patrykdepka.iteventsapi.event.domain.dto.CityDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 
 import java.util.List;
@@ -65,22 +64,6 @@ class EventServiceIT extends BaseIT {
         assertThat(event.isCurrentUserIsParticipant()).isFalse();
     }
 
-    @Test
-    void shouldReturnAllCities() {
-        // when
-        List<CityDTO> cities = eventService.findAllCities();
-        // then
-        assertThat(cities.isEmpty()).isFalse();
-        assertThat(cities.size()).isEqualTo(2);
-        assertThat(
-                cities.containsAll(
-                        List.of(
-                                new CityDTO("rzeszow", "Rzeszów"),
-                                new CityDTO("warszawa", "Warszawa"))
-                        )
-        ).isTrue();
-    }
-
     @ParameterizedTest
     @ValueSource(ints = {0, 1})
     void shouldReturnUpcomingEvents(int pageNumber) {
@@ -98,15 +81,16 @@ class EventServiceIT extends BaseIT {
     @Test
     void shouldReturnUpcomingEventsByCity() {
         // given
-        var city = "Rzeszów";
+        var cityUrnName = "rzeszow";
+        var cityDisplayName = "Rzeszów";
         PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
         // when
-        Page<EventItemListDTO> upcomingEvents = eventService.findUpcomingEventsByCity(city, page);
+        Page<EventItemListDTO> upcomingEvents = eventService.findUpcomingEventsByCity(cityUrnName, page);
         // then
         assertThat(upcomingEvents.getTotalPages()).isEqualTo(1);
         assertThat(upcomingEvents.getTotalElements()).isEqualTo(7);
         assertThat(upcomingEvents.getNumber()).isEqualTo(0);
-        upcomingEvents.getContent().forEach(e -> assertThat(e.getCity().equals(city)).isTrue());
+        upcomingEvents.getContent().forEach(e -> assertThat(e.getCity().equals(cityDisplayName)).isTrue());
         upcomingEvents.getContent().forEach(e -> assertThat(e.getDate().isAfter(TODAY)).isTrue());
     }
 
@@ -126,15 +110,16 @@ class EventServiceIT extends BaseIT {
     @Test
     void shouldReturnPastEventsByCity() {
         // given
-        var city = "Rzeszów";
+        var cityUrnName = "rzeszow";
+        var cityDisplayName = "Rzeszów";
         PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
         // when
-        Page<EventItemListDTO> pastEvents = eventService.findPastEventsByCity(city, page);
+        Page<EventItemListDTO> pastEvents = eventService.findPastEventsByCity(cityUrnName, page);
         // then
         assertThat(pastEvents.getTotalPages()).isEqualTo(1);
         assertThat(pastEvents.getTotalElements()).isEqualTo(5);
         assertThat(pastEvents.getNumber()).isEqualTo(0);
-        pastEvents.getContent().forEach(e -> assertThat(e.getCity().equals(city)).isTrue());
+        pastEvents.getContent().forEach(e -> assertThat(e.getCity().equals(cityDisplayName)).isTrue());
         pastEvents.getContent().forEach(e -> assertThat(e.getDate().isBefore(TODAY)).isTrue());
     }
 
@@ -177,14 +162,15 @@ class EventServiceIT extends BaseIT {
     @Test
     void shouldReturnEventsByCityWhereGivenUserIsParticipant() {
         // given
-        var city = "Rzeszów";
+        var cityUrnName = "rzeszow";
+        var cityDisplayName = "Rzeszów";
         PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
         // when
-        Page<EventItemListDTO> userEvents = eventService.findUserEventsByCity(createEventParticipant(), city, page);
+        Page<EventItemListDTO> userEvents = eventService.findUserEventsByCity(createEventParticipant(), cityUrnName, page);
         // then
         assertThat(userEvents.getTotalPages()).isEqualTo(1);
         assertThat(userEvents.getTotalElements()).isEqualTo(6);
         assertThat(userEvents.getNumber()).isEqualTo(0);
-        userEvents.getContent().forEach(e -> assertThat(e.getCity().equals(city)).isTrue());
+        userEvents.getContent().forEach(e -> assertThat(e.getCity().equals(cityDisplayName)).isTrue());
     }
 }

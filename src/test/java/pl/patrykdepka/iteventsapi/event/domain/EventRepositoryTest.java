@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.core.BaseIT;
 
 import java.time.LocalDateTime;
@@ -38,7 +37,7 @@ class EventRepositoryTest extends BaseIT {
         // given
         var eventId = 5L;
         // when
-        Optional<Event> event = eventRepository.findById(eventId);
+        Optional<Event> event = eventRepository.findEventById(eventId);
         // then
         assertThat(event).isNotEmpty();
         assertThat(event.get().getId()).isEqualTo(eventId);
@@ -53,14 +52,6 @@ class EventRepositoryTest extends BaseIT {
         assertThat(event.get().getAddress()).isEqualTo("Sucharskiego 2, 35-225 Rzeszów");
         assertThat(event.get().getOrganizer()).isEqualTo(createOrganizer());
         assertThat(event.get().getDescription()).isEqualTo("Spotkanie rzeszowskiej grupy pasjonatów języka Java.");
-    }
-
-    @Test
-    void shouldReturnAllCitiesOfSavedEvents() {
-        // when
-        List<String> cities = eventRepository.findAllCities();
-        // then
-        assertThat(cities.containsAll(List.of("Rzeszów", "Warszawa"))).isTrue();
     }
 
     @ParameterizedTest
@@ -124,7 +115,7 @@ class EventRepositoryTest extends BaseIT {
     @ValueSource(ints = {0, 1, 2})
     void shouldReturnOrganizerEvents(int pageNumber) {
         // given
-        var organizer = AppUser.builder().id(2L).uuid("48d28bdc-64b5-4415-9e29-9a86100aa22c").build();
+        var organizer = createOrganizer();
         PageRequest page = PageRequest.of(pageNumber, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
         // when
         Page<Event> events = eventRepository.findOrganizerEvents(organizer, page);
@@ -139,7 +130,7 @@ class EventRepositoryTest extends BaseIT {
     @ValueSource(ints = {0, 1})
     void shouldReturnOrganizerEventsByCity(int pageNumber) {
         // given
-        var organizer = AppUser.builder().id(2L).uuid("48d28bdc-64b5-4415-9e29-9a86100aa22c").build();
+        var organizer = createOrganizer();
         var city = "Rzeszów";
         PageRequest page = PageRequest.of(pageNumber, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
         // when
@@ -188,7 +179,7 @@ class EventRepositoryTest extends BaseIT {
     @Test
     void shouldReturnEventsAndItsParticipantsByCity() {
         // given
-        String city = "Rzeszów";
+        var city = "Rzeszów";
         // when
         List<Event> events = eventRepository.findEventsAndItsParticipantsByCity(city);
         // then

@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.patrykdepka.iteventsapi.appuser.domain.CurrentUserFacade;
 import pl.patrykdepka.iteventsapi.event.domain.EventService;
-import pl.patrykdepka.iteventsapi.event.domain.dto.CityDTO;
-import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
-import pl.patrykdepka.iteventsapi.event.domain.exception.CityNotFoundException;
+import pl.patrykdepka.iteventsapi.event.domain.dto.EventItemListDTO;
 
 import java.util.List;
 
@@ -48,8 +46,6 @@ class EventController {
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
-        List<CityDTO> cities = eventService.findAllCities();
-        city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
         return eventService.findUpcomingEventsByCity(city, pageRequest);
@@ -67,8 +63,6 @@ class EventController {
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
-        List<CityDTO> cities = eventService.findAllCities();
-        city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
         return eventService.findPastEventsByCity(city, pageRequest);
@@ -96,20 +90,8 @@ class EventController {
             @PathVariable String city,
             @RequestParam(name = "page", required = false) Integer pageNumber
     ) {
-        List<CityDTO> cities = eventService.findAllCities();
-        city = getCity(cities, city);
         int page = pageNumber != null ? pageNumber : 1;
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "dateTime"));
         return eventService.findUserEventsByCity(currentUserFacade.getCurrentUser(), city, pageRequest);
-    }
-
-    private String getCity(List<CityDTO> cities, String city) {
-        for (CityDTO cityDTO : cities) {
-            if (cityDTO.getNameWithoutPlCharacters().equals(city)) {
-                return cityDTO.getDisplayName();
-            }
-        }
-
-        throw new CityNotFoundException("City with name " + city + " not found");
     }
 }

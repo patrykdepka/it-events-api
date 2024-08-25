@@ -15,12 +15,8 @@ public interface EventRepository extends PagingAndSortingRepository<Event, Long>
     @Query("SELECT e FROM Event e WHERE e.dateTime > :currentDateTime ORDER BY e.dateTime ASC")
     Page<Event> findFirst10UpcomingEvents(LocalDateTime currentDateTime, Pageable pageable);
 
-    @Override
     @Query("SELECT e FROM Event e LEFT JOIN FETCH e.eventImage LEFT JOIN FETCH e.organizer WHERE e.id = :id")
-    Optional<Event> findById(Long id);
-
-    @Query("SELECT DISTINCT e.city FROM Event e")
-    List<String> findAllCities();
+    Optional<Event> findEventById(Long id);
 
     @Query("SELECT e FROM Event e WHERE e.dateTime > :currentDateTime")
     Page<Event> findUpcomingEvents(LocalDateTime currentDateTime, Pageable pageable);
@@ -34,10 +30,10 @@ public interface EventRepository extends PagingAndSortingRepository<Event, Long>
     @Query("SELECT e FROM Event e WHERE e.dateTime < :currentDateTime AND e.city = :city")
     Page<Event> findPastEventsByCity(LocalDateTime currentDateTime, String city, Pageable pageable);
 
-    @Query("SELECT e FROM Event e WHERE e.organizer = :user")
+    @Query("SELECT e FROM Event e LEFT JOIN e.organizer WHERE e.organizer = :user")
     Page<Event> findOrganizerEvents(AppUser user, Pageable pageable);
 
-    @Query("SELECT e FROM Event e WHERE e.organizer = :user AND e.city = :city")
+    @Query("SELECT e FROM Event e LEFT JOIN e.organizer WHERE e.organizer = :user AND e.city = :city")
     Page<Event> findOrganizerEventsByCity(AppUser user, String city, Pageable pageable);
 
     @Query("SELECT DISTINCT e FROM Event e LEFT JOIN FETCH e.organizer LEFT JOIN FETCH e.participants WHERE e.id = :id")

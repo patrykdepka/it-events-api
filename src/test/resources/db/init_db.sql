@@ -117,6 +117,11 @@ VALUES (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (
 UPDATE `app_user_roles`
 SET role='ROLE_ORGANIZER' WHERE app_user_id = 2;
 
+INSERT INTO `dict_city` (`uuid`, `urn_name`, `display_name`)
+VALUES
+    ('fa07d868-6f06-4603-8a2e-8900ccc93c7a', 'rzeszow', 'Rzeszów'),
+    ('a87ea734-f9b3-455c-b6c1-764a6cbd1357', 'warszawa', 'Warszawa');
+
 INSERT INTO `event` (`uuid`, `name`, `event_type`, `date_time`, `language`, `admission`, `city`, `location`, `address`, `organizer_id`, `description`)
 VALUES
     (UUID(), 'Java Dev Talks #1', 'MEETING', CONCAT(YEAR(CURDATE()), '-01-15T18:00'), 'polski', 'FREE', 'Rzeszów', 'WSIiZ', 'Sucharskiego 2, 35-225 Rzeszów', 2, 'Spotkanie rzeszowskiej grupy pasjonatów języka Java.'),

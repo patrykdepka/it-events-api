@@ -59,7 +59,7 @@ class OrganizerEventServiceIT extends BaseIT {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1, 2})
+    @ValueSource(ints = {0, 1})
     void shouldReturnEventsWhereUserIsOrganizer(int pageNumber) {
         // given
         var organizer = createOrganizer();
@@ -77,15 +77,16 @@ class OrganizerEventServiceIT extends BaseIT {
     void shouldReturnEventsByCityWhereUserIsOrganizer(int pageNumber) {
         // given
         var organizer = createOrganizer();
-        var city = "Rzeszów";
+        var cityUrnName = "rzeszow";
+        var cityDisplayName = "Rzeszów";
         PageRequest page = PageRequest.of(pageNumber, 10, Sort.by(Sort.Direction.ASC, "dateTime"));
         // when
-        Page<EventItemListDTO> events = organizerEventService.findOrganizerEventsByCity(organizer, city, page);
+        Page<EventItemListDTO> events = organizerEventService.findOrganizerEventsByCity(organizer, cityUrnName, page);
         // then
         assertThat(events.getTotalPages()).isEqualTo(2);
         assertThat(events.getTotalElements()).isEqualTo(12);
         assertThat(events.getNumber()).isEqualTo(pageNumber);
-        events.getContent().forEach(e -> assertThat(e.getCity().equals(city)).isTrue());
+        events.getContent().forEach(e -> assertThat(e.getCity().equals(cityDisplayName)).isTrue());
     }
 
     @Test

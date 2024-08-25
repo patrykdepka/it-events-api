@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUserRepository;
+import pl.patrykdepka.iteventsapi.dictionary.domain.DictCity;
+import pl.patrykdepka.iteventsapi.dictionary.domain.DictCityService;
 import pl.patrykdepka.iteventsapi.event.domain.dto.CreateEventDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventDTO;
 import pl.patrykdepka.iteventsapi.event.domain.dto.EventEditDTO;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static org.apache.commons.lang3.StringUtils.stripAccents;
 import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventDTOMapper.mapToEventDTO;
 import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventEditDTOMapper.mapToEventEditDTO;
 import static pl.patrykdepka.iteventsapi.event.domain.mapper.EventItemListDTOMapper.mapToEventItemListDTOs;
@@ -35,6 +38,7 @@ public class OrganizerEventService {
     private final Logger logger = LoggerFactory.getLogger(OrganizerEventService.class);
     private final EventRepository eventRepository;
     private final ImageService imageService;
+    private final DictCityService dictCityService;
     private final AppUserRepository appUserRepository;
 
     public EventDTO createEvent(AppUser currentUser, CreateEventDTO newEventData) {
@@ -45,7 +49,7 @@ public class OrganizerEventService {
         event.setDateTime(LocalDateTime.parse(newEventData.getDateTime(), ISO_LOCAL_DATE_TIME));
         event.setLanguage(newEventData.getLanguage());
         event.setAdmission(newEventData.getAdmission());
-        event.setCity(newEventData.getCity());
+        event.setCity(getCity(newEventData.getCity()));
         event.setLocation(newEventData.getLocation());
         event.setAddress(newEventData.getAddress());
         event.setOrganizer(currentUser);
@@ -55,16 +59,19 @@ public class OrganizerEventService {
         return mapToEventDTO(createdEvent, currentUser);
     }
 
+    @Transactional
     public Page<EventItemListDTO> findOrganizerEvents(AppUser currentUser, Pageable page) {
         return mapToEventItemListDTOs(eventRepository.findOrganizerEvents(currentUser, page));
     }
 
-    public Page<EventItemListDTO> findOrganizerEventsByCity(AppUser currentUser, String city, Pageable page) {
+    @Transactional
+    public Page<EventItemListDTO> findOrganizerEventsByCity(AppUser currentUser, String cityUrnName, Pageable page) {
+        String city = dictCityService.findCityByUrnName(cityUrnName).getDisplayName();
         return mapToEventItemListDTOs(eventRepository.findOrganizerEventsByCity(currentUser, city, page));
     }
 
     public EventEditDTO findEventToEdit(AppUser currentUser, Long eventId) {
-        Event event = eventRepository.findById(eventId)
+        Event event = eventRepository.findEventById(eventId)
                 .orElseThrow(() -> new EventNotFoundException("Event [ID: " + eventId + "] not found"));
         if (!event.getOrganizer().equals(currentUser)) {
             throw new AccessDeniedException("Access is denied");
@@ -73,7 +80,7 @@ public class OrganizerEventService {
     }
 
     public EventEditDTO updateEvent(AppUser currentUser, Long id, EventEditDTO eventEditData) {
-        Event event = eventRepository.findById(id)
+        Event event = eventRepository.findEventById(id)
                 .orElseThrow(() -> new EventNotFoundException("Event [ID: " + id + "] not found"));
         if (!event.getOrganizer().equals(currentUser)) {
             throw new AccessDeniedException("Access is denied");
@@ -112,6 +119,21 @@ public class OrganizerEventService {
         return ParticipantDTOMapper.mapToParticipantDTOs(appUserRepository.findAllById(participants), page);
     }
 
+    private String getCity(String cityDisplayName) {
+        String cityUrnName = prepareCityUrnName(cityDisplayName);
+        return dictCityService.findCityByUrnNameIfExists(cityUrnName)
+                .orElse(new DictCity(cityUrnName, cityDisplayName.trim()))
+                .getDisplayName();
+    }
+
+    private String prepareCityUrnName(String city) {
+        String urnName = city.trim();
+        urnName = urnName.toLowerCase();
+        urnName = urnName.replace("\\s", "-");
+        urnName = stripAccents(urnName);
+        return urnName;
+    }
+
     private void setEventFields(EventEditDTO source, Event target) {
         if (source.getName() != null && !source.getName().equals(target.getName())) {
             target.setName(source.getName());
@@ -132,7 +154,7 @@ public class OrganizerEventService {
             target.setAdmission(source.getAdmission());
         }
         if (source.getCity() != null && !source.getCity().equals(target.getCity())) {
-            target.setCity(source.getCity());
+            target.setCity(getCity(source.getCity()));
         }
         if (source.getLocation() != null && !source.getLocation().equals(target.getLocation())) {
             target.setLocation(source.getLocation());

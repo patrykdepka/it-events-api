@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
-    <changeSet id="0012-1" author="Patryk Depka">
+    <changeSet id="0014-1" author="Patryk Depka">
         <createTable tableName="event">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
@@ -45,7 +45,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="0012-2" author="Patryk Depka">
+    <changeSet id="0014-3" author="Patryk Depka">
         <addForeignKeyConstraint baseTableName="event"
                                  baseColumnNames="organizer_id"
                                  constraintName="fk_event_app_user"

@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Patryk Depka:0013-1
+--changeset Patryk Depka:0015
 INSERT INTO `event` (`uuid`, `name`, `event_type`, `date_time`, `language`, `admission`, `city`, `location`, `address`, `organizer_id`, `description`)
 VALUES
     (UUID(), 'Java Dev Talks #1', 'MEETING', CONCAT(YEAR(CURDATE()), '-01-15T18:00'), 'polski', 'FREE', 'Rzeszów', 'WSIiZ', 'Sucharskiego 2, 35-225 Rzeszów', 2, 'Spotkanie rzeszowskiej grupy pasjonatów języka Java.'),

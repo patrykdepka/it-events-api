@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.patrykdepka.iteventsapi.appuser.domain.AppUser;
 import pl.patrykdepka.iteventsapi.core.BaseEntity;
+import pl.patrykdepka.iteventsapi.dictionary.domain.DictCity;
 import pl.patrykdepka.iteventsapi.image.domain.Image;
 
 import javax.persistence.CascadeType;
